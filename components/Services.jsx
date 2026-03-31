@@ -8,8 +8,6 @@ const services = [
     title: 'AI System Architecture & Build',
     description:
       'Design and build production-grade RAG pipelines, Agentic AI workflows, and LLM-powered enterprise applications on Azure. From architecture to deployment.',
-    price: '$3,000',
-    unit: 'per project',
     cta: 'Discuss Project',
   },
   {
@@ -17,18 +15,14 @@ const services = [
     title: 'AI System Audit & Improvement',
     description:
       'Audit, optimize, and scale your existing AI infrastructure. Fix performance bottlenecks, reduce costs, and improve reliability for systems already in production.',
-    price: '$1,000',
-    unit: 'per engagement',
     cta: 'Get an Audit',
   },
   {
     number: '03',
-    title: 'Advisory Retainer',
+    title: 'Advisory & Strategic Consulting',
     description:
-      'Monthly strategic advisory for CTOs and engineering leaders adopting enterprise AI — architecture reviews, team guidance, and AI roadmap planning.',
-    price: '$500',
-    unit: 'per month',
-    cta: 'Start Conversation',
+      'Strategic advisory for CTOs and engineering leaders adopting enterprise AI — architecture reviews, team guidance, and AI roadmap planning.',
+    cta: 'Start a Conversation',
   },
 ]
 
@@ -159,30 +153,6 @@ export default function Services() {
               >
                 {svc.description}
               </p>
-
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                  <span
-                    style={{
-                      fontFamily: 'Georgia, serif',
-                      fontSize: '1.6rem',
-                      color: '#29b6f6',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {svc.price}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: '#546e7a',
-                      fontFamily: '"Courier New", monospace',
-                    }}
-                  >
-                    {svc.unit}
-                  </span>
-                </div>
-              </div>
 
               <button
                 onClick={scrollToContact}

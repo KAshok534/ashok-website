@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 
 const navLinks = [
   { label: 'About', href: '#about' },
@@ -14,6 +15,8 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -22,15 +25,19 @@ export default function Navbar() {
   }, [])
 
   const handleNavClick = (e, href) => {
-    if (href.startsWith('#')) {
-      e.preventDefault()
-      const target = document.querySelector(href)
+    e.preventDefault()
+    setMenuOpen(false)
+    const id = href.replace('#', '')
+    if (pathname === '/') {
+      // Already on home — smooth scroll
+      const target = document.getElementById(id)
       if (target) {
-        const navHeight = 80
-        const top = target.getBoundingClientRect().top + window.scrollY - navHeight
+        const top = target.getBoundingClientRect().top + window.scrollY - 80
         window.scrollTo({ top, behavior: 'smooth' })
       }
-      setMenuOpen(false)
+    } else {
+      // On another page — navigate to home then scroll
+      router.push(`/#${id}`)
     }
   }
 

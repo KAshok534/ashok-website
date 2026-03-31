@@ -67,7 +67,7 @@ export default function About() {
                 src="/assets/ashok.png"
                 alt="Ashok Kumar Kunchala — Head of Technology at Anvesa"
                 fill
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'cover', objectPosition: 'center 23%' }}
                 sizes="280px"
                 priority
               />
