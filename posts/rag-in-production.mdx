@@ -1,0 +1,53 @@
+---
+title: "What Nobody Tells You About Building RAG Systems in Production"
+date: "2026-03-31"
+excerpt: "Real lessons from shipping a RAG pipeline for enterprise eDiscovery — what the tutorials skip over."
+readTime: "5 min read"
+tags: ["RAG", "AI", "Azure", "Production", "eDiscovery"]
+---
+
+Everybody's building RAG systems right now. Most of them work great in demos.
+
+Here's what the tutorials don't cover — from someone who's been running one in production for enterprise eDiscovery clients across three countries.
+
+## Chunking Is Everything, and Nobody Gets It Right the First Time
+
+The first version of our chunking strategy was logical: fixed-size chunks, 500 tokens, 100-token overlap. Clean. Predictable. Wrong.
+
+In eDiscovery, documents aren't blog posts. You're processing contracts, depositions, emails, spreadsheets — sometimes all in the same case. A deposition transcript has a rhythm to it. Q&A pairs lose all meaning when you split them down the middle. An email thread makes no sense if you separate the header from the body.
+
+We spent two months getting chunking right. The result was document-type-aware logic that handles PDFs, Word docs, emails, and spreadsheets differently. For legal depositions, we chunk by speaker turn. For contracts, by clause and sub-clause. For emails, we keep the thread header with every reply chunk.
+
+The difference in retrieval quality was not incremental. It was dramatic.
+
+## Retrieval Quality and Generation Quality Are Completely Separate Problems
+
+When the system gives a bad answer, the instinct is to blame the LLM. In my experience, 70% of the time the problem is retrieval, not generation.
+
+Wrong chunks → wrong context → wrong answer. The LLM is just doing its job.
+
+We now instrument every RAG call end-to-end: what query came in, which chunks were retrieved, what similarity scores they carried, what the model actually saw in its context window. When something goes wrong in production, I can trace the failure in under two minutes. If you're not doing this, you're debugging blind in the dark.
+
+## Cost at Scale Is Not an Afterthought
+
+Embedding four million documents with a commercial API costs real money. Then there's retrieval cost, LLM inference cost, and — the one people forget — reprocessing cost when you change your chunking strategy (and you will change it).
+
+We moved our embedding workload to Azure's text-embedding-3-large early and built a caching layer on top of it. Batch processing runs during off-peak hours. Index rebuilds are scheduled events, not on-demand emergencies.
+
+Model the costs before you ship. "We'll optimize later" is how you end up in an uncomfortable call with a client about an unexpected bill.
+
+## Index Freshness Is an Ops Problem, Not a Dev Problem
+
+In eDiscovery, documents arrive continuously. A new set of 60,000 emails might drop overnight. The system needs those indexed and searchable by morning.
+
+We built our ingestion pipeline on Azure Service Bus — new documents trigger chunking and embedding jobs, which feed into Azure AI Search in near real-time. Queue depth, processing latency, and failure rates are all monitored. When the ingestion pipeline backs up at 2am, someone knows before the client does.
+
+The mistake I see most often: engineering teams build a beautiful RAG system with zero plan for keeping the index current. That's not a RAG system. That's a snapshot.
+
+## The Part Nobody Puts in the Tutorial
+
+RAG is not a library you install. It's a system — made of chunking logic, embedding models, retrieval infrastructure, prompt design, and observability that holds it together in production.
+
+Get each layer right independently. Instrument everything. Design for the failure modes you haven't encountered yet — because you will encounter them.
+
+That's what it takes to ship something that actually works when a client's legal team is relying on it.
