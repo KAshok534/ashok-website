@@ -7,31 +7,24 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'bg-primary': '#050d1a',
-        'bg-secondary': '#070e1c',
-        'bg-card': '#0a1628',
-        'accent': '#29b6f6',
-        'accent-dark': '#0090d4',
-        'text-primary': '#ffffff',
-        'text-secondary': '#90caf9',
-        'text-muted': '#546e7a',
+        // Editorial Executive palette — keep tokens in sync with globals.css
+        'ink':        '#0e0d0b',
+        'ink-deep':   '#08080a',
+        'ink-warm':   '#14110d',
+        'bone':       '#ebe5d8',
+        'bone-muted': '#b8b1a3',
+        'slate':      '#75716a',
+        'whisper':    '#4a4742',
+        'gold':       '#c9a86a',
+        'oxblood':    '#8b3a3a',
       },
       fontFamily: {
-        heading: ['Georgia', 'serif'],
-        body: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['"Courier New"', 'Courier', 'monospace'],
+        display: ['var(--font-fraunces)', 'Cormorant Garamond', 'Georgia', 'serif'],
+        body:    ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono:    ['var(--font-mono)', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       maxWidth: {
-        site: '1200px',
-      },
-      animation: {
-        'fade-up': 'fadeUp 0.6s ease forwards',
-      },
-      keyframes: {
-        fadeUp: {
-          from: { opacity: 0, transform: 'translateY(30px)' },
-          to: { opacity: 1, transform: 'translateY(0)' },
-        },
+        site: '1240px',
       },
     },
   },

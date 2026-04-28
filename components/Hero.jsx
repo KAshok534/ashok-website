@@ -1,94 +1,38 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+/*
+ * Hero — Editorial Executive direction.
+ * No particle canvas. The hero IS the typography.
+ * Asymmetric grid with marginalia on left, primary type column on right.
+ * One opening reveal — staggered, then everything settles.
+ */
+
 import { motion } from 'framer-motion'
 
 const stats = [
-  { value: '13+', label: 'Years Experience' },
-  { value: '15+', label: 'Enterprise Clients' },
-  { value: '3', label: 'Countries' },
-  { value: '1', label: 'Product Built from Zero' },
+  { value: '13+', label: 'Years in practice' },
+  { value: '15+', label: 'Enterprise clients' },
+  { value: '03',  label: 'Continents served' },
+  { value: '01',  label: 'Platform built ground-up' },
 ]
 
+const stagger = {
+  visible: { transition: { staggerChildren: 0.10, delayChildren: 0.05 } },
+}
+const rise = {
+  hidden:  { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.2, 0.8, 0.2, 1] } },
+}
+const drawRule = {
+  hidden:  { scaleX: 0 },
+  visible: { scaleX: 1, transition: { duration: 1.1, ease: [0.7, 0, 0.3, 1], delay: 0.2 } },
+}
+
 export default function Hero() {
-  const canvasRef = useRef(null)
-  const animRef = useRef(null)
-  const particlesRef = useRef([])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-
-    const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      initParticles()
-    }
-
-    function initParticles() {
-      const count = Math.min(70, Math.floor((canvas.width * canvas.height) / 18000))
-      particlesRef.current = Array.from({ length: count }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        r: Math.random() * 1.4 + 0.4,
-      }))
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const particles = particlesRef.current
-      const maxDist = 140
-
-      for (const p of particles) {
-        p.x += p.vx
-        p.y += p.vy
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1
-
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(41, 182, 246, 0.55)'
-        ctx.fill()
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist < maxDist) {
-            const alpha = 0.12 * (1 - dist / maxDist)
-            ctx.beginPath()
-            ctx.moveTo(particles[i].x, particles[i].y)
-            ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.strokeStyle = `rgba(41, 182, 246, ${alpha})`
-            ctx.lineWidth = 0.6
-            ctx.stroke()
-          }
-        }
-      }
-
-      animRef.current = requestAnimationFrame(animate)
-    }
-
-    resize()
-    animate()
-
-    window.addEventListener('resize', resize)
-    return () => {
-      window.removeEventListener('resize', resize)
-      cancelAnimationFrame(animRef.current)
-    }
-  }, [])
-
   const scrollTo = (id) => {
     const el = document.querySelector(id)
     if (!el) return
-    const navH = 80
-    const top = el.getBoundingClientRect().top + window.scrollY - navH
+    const top = el.getBoundingClientRect().top + window.scrollY - 80
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
@@ -98,237 +42,203 @@ export default function Hero() {
       style={{
         position: 'relative',
         minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        background: 'var(--ink)',
+        padding: 'calc(var(--section-y) + 60px) var(--section-x) var(--section-y)',
         overflow: 'hidden',
-        background: '#050d1a',
-        padding: '120px 24px 80px',
       }}
     >
-      {/* Canvas */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          opacity: 0.65,
-        }}
-      />
-
-      {/* Radial gradient overlay */}
+      {/* Soft warm aurora — barely there, replaces particle canvas */}
       <div
+        aria-hidden
         style={{
           position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse at center top, rgba(41,182,246,0.06) 0%, transparent 65%)',
+          top: '-30%',
+          left: '-10%',
+          width: '70%',
+          height: '90%',
+          background: 'radial-gradient(ellipse at center, rgba(201,168,106,0.07), transparent 60%)',
+          filter: 'blur(40px)',
           pointerEvents: 'none',
         }}
       />
 
-      {/* Content */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          maxWidth: '820px',
-          textAlign: 'center',
-          width: '100%',
-        }}
-      >
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          style={{
-            fontFamily: '"Courier New", monospace',
-            fontSize: '0.8rem',
-            letterSpacing: '0.2em',
-            color: '#29b6f6',
-            textTransform: 'uppercase',
-            marginBottom: '20px',
-          }}
-        >
-          Technology Leader &nbsp;·&nbsp; Enterprise AI Architect
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(2.6rem, 7vw, 5rem)',
-            fontWeight: 700,
-            color: '#ffffff',
-            marginBottom: '24px',
-            lineHeight: 1.1,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          Ashok Kumar Kunchala
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          style={{
-            fontSize: 'clamp(1.1rem, 3vw, 1.45rem)',
-            color: '#90caf9',
-            fontFamily: 'Georgia, serif',
-            fontStyle: 'italic',
-            marginBottom: '16px',
-            lineHeight: 1.4,
-          }}
-        >
-          Building Production-Ready AI Systems for Enterprise
-        </motion.p>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          style={{
-            fontSize: '0.95rem',
-            color: '#546e7a',
-            fontFamily: '"Courier New", monospace',
-            letterSpacing: '0.05em',
-            marginBottom: '44px',
-          }}
-        >
-          13+ years &nbsp;·&nbsp; 15+ enterprise clients &nbsp;·&nbsp; US · India · Australia
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
-          style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}
-        >
-          <button
-            onClick={() => scrollTo('#work')}
-            style={{
-              padding: '13px 32px',
-              background: '#29b6f6',
-              color: '#050d1a',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: 'pointer',
-              fontFamily: 'system-ui, sans-serif',
-              letterSpacing: '0.01em',
-              transition: 'background 0.2s, transform 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = '#0090d4'
-              e.target.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = '#29b6f6'
-              e.target.style.transform = 'translateY(0)'
-            }}
-          >
-            View My Work
-          </button>
-          <button
-            onClick={() => scrollTo('#contact')}
-            style={{
-              padding: '13px 32px',
-              background: 'transparent',
-              color: '#29b6f6',
-              border: '1px solid #29b6f6',
-              borderRadius: '6px',
-              fontWeight: 600,
-              fontSize: '0.95rem',
-              cursor: 'pointer',
-              fontFamily: 'system-ui, sans-serif',
-              letterSpacing: '0.01em',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(41,182,246,0.08)'
-              e.target.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'transparent'
-              e.target.style.transform = 'translateY(0)'
-            }}
-          >
-            Let&apos;s Connect
-          </button>
-        </motion.div>
-      </div>
-
-      {/* Stats row */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.85 }}
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
         style={{
           position: 'relative',
-          zIndex: 2,
+          maxWidth: '1240px',
+          margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '1px',
-          width: '100%',
-          maxWidth: '820px',
-          marginTop: '80px',
-          background: 'rgba(41, 182, 246, 0.08)',
-          border: '1px solid rgba(41, 182, 246, 0.12)',
-          borderRadius: '12px',
-          overflow: 'hidden',
+          gridTemplateColumns: '180px 1fr',
+          gap: '48px',
+          alignItems: 'start',
         }}
-        className="stats-grid"
+        className="hero-grid"
       >
-        {stats.map((stat, i) => (
-          <div
-            key={i}
+        {/* ─── Marginalia column ─────────────────────────────────── */}
+        <motion.aside
+          variants={rise}
+          style={{ paddingTop: '14px' }}
+          className="hero-marginalia"
+        >
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 00 · Index</div>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {[
+              ['I',   'Practice'],
+              ['II',  'Career'],
+              ['III', 'Anvesa'],
+              ['IV',  'Method'],
+              ['V',   'Correspondence'],
+            ].map(([num, label]) => (
+              <li key={num} className="marginalia" style={{ display: 'flex', gap: '12px' }}>
+                <span style={{ color: 'var(--whisper)', minWidth: '20px' }}>{num}</span>
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.aside>
+
+        {/* ─── Primary type column ───────────────────────────────── */}
+        <div>
+          <motion.div variants={rise} className="eyebrow" style={{ marginBottom: '36px' }}>
+            Hyderabad · Practising globally · Est. 2013
+          </motion.div>
+
+          {/* Name — anchored, restrained weight, soft optical axis */}
+          <motion.h1
+            variants={rise}
             style={{
-              padding: '28px 20px',
-              textAlign: 'center',
-              background: 'rgba(10, 22, 40, 0.6)',
-              borderRight: i < stats.length - 1 ? '1px solid rgba(41,182,246,0.1)' : 'none',
+              fontSize: 'clamp(3rem, 8.5vw, 7.4rem)',
+              fontWeight: 300,
+              lineHeight: 0.94,
+              letterSpacing: '-0.035em',
+              color: 'var(--bone)',
+              marginBottom: '8px',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
             }}
           >
-            <div
+            Ashok&nbsp;Kumar
+            <br />
+            <span
               style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '2rem',
-                fontWeight: 700,
-                color: '#29b6f6',
-                marginBottom: '4px',
-                lineHeight: 1,
+                fontStyle: 'italic',
+                fontWeight: 350,
+                color: 'var(--bone-muted)',
+                fontVariationSettings: '"opsz" 144, "SOFT" 100',
               }}
             >
-              {stat.value}
-            </div>
-            <div
-              style={{
-                fontSize: '0.78rem',
-                color: '#546e7a',
-                fontFamily: '"Courier New", monospace',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {stat.label}
-            </div>
-          </div>
-        ))}
+              Kunchala.
+            </span>
+          </motion.h1>
+
+          {/* Animated hairline */}
+          <motion.div
+            variants={drawRule}
+            style={{
+              transformOrigin: 'left center',
+              height: '1px',
+              background: 'var(--rule-strong)',
+              margin: '40px 0 36px',
+              maxWidth: '480px',
+            }}
+          />
+
+          {/* Lede — what he does, in editorial voice */}
+          <motion.p
+            variants={rise}
+            className="lede"
+            style={{ maxWidth: '680px', marginBottom: '32px' }}
+          >
+            Technology leader, enterprise AI architect — building
+            <span style={{ color: 'var(--gold)', fontStyle: 'normal' }}> production </span>
+            systems that hold up under real load, not just demos.
+          </motion.p>
+
+          {/* Supporting — tags-as-prose */}
+          <motion.p
+            variants={rise}
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '0.78rem',
+              letterSpacing: '0.08em',
+              color: 'var(--slate)',
+              marginBottom: '54px',
+              textTransform: 'uppercase',
+            }}
+          >
+            Head of Technology, Anvesa &nbsp;·&nbsp; Board contributor &nbsp;·&nbsp; 13 yrs in practice
+          </motion.p>
+
+          {/* CTAs — ghost & primary, not solid blocks */}
+          <motion.div variants={rise} style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '90px' }}>
+            <button onClick={() => scrollTo('#work')} className="btn-primary">
+              <span>Read the work</span>
+              <span className="arrow">→</span>
+            </button>
+            <button onClick={() => scrollTo('#contact')} className="btn-ghost">
+              <span>· Begin a conversation</span>
+            </button>
+          </motion.div>
+
+          {/* Stats — set as a tabular figure ledger, no card boxes */}
+          <motion.dl
+            variants={rise}
+            className="hero-stats"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '0',
+              borderTop: '1px solid var(--rule)',
+              borderBottom: '1px solid var(--rule)',
+            }}
+          >
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                style={{
+                  padding: '24px 20px 22px',
+                  borderRight: i < stats.length - 1 ? '1px solid var(--rule)' : '0',
+                }}
+              >
+                <dt
+                  className="marginalia"
+                  style={{ marginBottom: '12px', color: 'var(--slate)' }}
+                >
+                  № {String(i + 1).padStart(2, '0')}
+                </dt>
+                <dd
+                  style={{
+                    fontFamily: 'var(--display)',
+                    fontWeight: 300,
+                    fontSize: 'clamp(1.8rem, 3.2vw, 2.4rem)',
+                    color: 'var(--bone)',
+                    lineHeight: 1,
+                    marginBottom: '8px',
+                    fontVariationSettings: '"opsz" 96',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {s.value}
+                </dd>
+                <dd
+                  style={{
+                    fontFamily: 'var(--body)',
+                    fontSize: '0.82rem',
+                    color: 'var(--bone-muted)',
+                    fontWeight: 400,
+                    letterSpacing: '0.005em',
+                  }}
+                >
+                  {s.label}
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
+        </div>
       </motion.div>
 
-      <style>{`
-        @media (max-width: 600px) {
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-      `}</style>
     </section>
   )
 }

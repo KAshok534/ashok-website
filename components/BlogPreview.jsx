@@ -1,288 +1,202 @@
 'use client'
 
+/*
+ * BlogPreview — turned card grid into a magazine table-of-contents.
+ * Each post is a hairline-separated row: number, kicker meta, title, excerpt.
+ * Hover reveals the underline beneath the title.
+ */
+
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
+// Parse YYYY-MM-DD as UTC + format in UTC, so server and client agree
+// regardless of the user's timezone (otherwise hydration mismatches).
 function formatDate(dateStr) {
   try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const [y, m, d] = String(dateStr).split('-').map(Number)
+    const date = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC',
     })
   } catch {
     return dateStr
   }
 }
 
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } }
+const rise = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.2, 0.8, 0.2, 1] } },
+}
+
 export default function BlogPreview({ posts }) {
   const hasPosts = posts && posts.length > 0
+  const items = hasPosts ? posts : [null, null, null]
 
   return (
     <section
       id="blog"
       style={{
-        background: '#050d1a',
-        padding: '110px 24px',
+        background: 'var(--ink)',
+        padding: 'var(--section-y) var(--section-x)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '56px' }}
-        >
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        style={{ maxWidth: '1240px', margin: '0 auto' }}
+      >
+        <motion.div variants={rise} style={{ marginBottom: '32px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 06 — From the journal</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px' }}>
+            <h2
+              style={{
+                fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+                fontWeight: 300,
+                letterSpacing: '-0.025em',
+                lineHeight: 1.05,
+                maxWidth: '20ch',
+                fontVariationSettings: '"opsz" 144, "SOFT" 30',
+              }}
+            >
+              Notes on AI{' '}
+              <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+                & engineering.
+              </span>
+            </h2>
+            <Link href="/blog" className="btn-ghost" style={{ fontSize: '0.76rem' }}>
+              <span>All entries</span>
+              <span style={{ display: 'inline-block', transition: 'transform 240ms ease' }}>→</span>
+            </Link>
+          </div>
           <p
             style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
-              marginBottom: '14px',
-            }}
-          >
-            Writing
-          </p>
-          <h2
-            style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-              color: '#ffffff',
-              marginBottom: '12px',
-            }}
-          >
-            Thoughts on AI &amp; Engineering
-          </h2>
-          <p
-            style={{
-              fontSize: '1rem',
-              color: '#546e7a',
-              fontFamily: 'system-ui, sans-serif',
+              marginTop: '14px',
+              fontSize: '1.02rem',
+              color: 'var(--bone-muted)',
+              maxWidth: '54ch',
             }}
           >
             Real lessons from building enterprise AI systems — not theory.
           </p>
         </motion.div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-            marginBottom: '48px',
-          }}
-          className="blog-grid"
-        >
-          {hasPosts
-            ? posts.map((post, i) => (
-                <motion.article
-                  key={post.slug}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
+        <hr className="rule" />
+
+        {/* Editorial table-of-contents */}
+        <div>
+          {items.map((post, i) => (
+            <motion.div key={post?.slug || `p-${i}`} variants={rise}>
+              {post ? (
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="toc-row"
                   style={{
-                    background: '#0a1628',
-                    border: '1px solid rgba(41, 182, 246, 0.12)',
-                    borderRadius: '12px',
-                    padding: '28px',
-                    transition: 'border-color 0.2s',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(41,182,246,0.3)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(41,182,246,0.12)'
+                    display: 'grid',
+                    gridTemplateColumns: '80px 200px 1fr 100px',
+                    gap: '32px',
+                    padding: '32px 0',
+                    borderBottom: '1px solid var(--rule)',
+                    alignItems: 'baseline',
+                    textDecoration: 'none',
                   }}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '16px',
-                      gap: '8px',
-                      flexWrap: 'wrap',
-                    }}
+                  <span
+                    className="marginalia"
+                    style={{ color: 'var(--whisper)', fontSize: '0.78rem' }}
                   >
-                    <span
+                    № {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span
+                    className="marginalia"
+                    style={{ color: 'var(--slate)', fontSize: '0.74rem' }}
+                  >
+                    {formatDate(post.date)}
+                  </span>
+                  <div>
+                    <h3
+                      className="toc-title"
                       style={{
-                        fontFamily: '"Courier New", monospace',
-                        fontSize: '0.72rem',
-                        color: '#546e7a',
-                        letterSpacing: '0.05em',
+                        fontFamily: 'var(--display)',
+                        fontSize: 'clamp(1.25rem, 2.4vw, 1.6rem)',
+                        fontWeight: 400,
+                        color: 'var(--bone)',
+                        lineHeight: 1.2,
+                        letterSpacing: '-0.018em',
+                        marginBottom: '8px',
+                        fontVariationSettings: '"opsz" 96',
+                        transition: 'color 220ms ease',
                       }}
                     >
-                      {formatDate(post.date)}
-                    </span>
-                    {post.readTime && (
-                      <span
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p
                         style={{
-                          fontFamily: '"Courier New", monospace',
-                          fontSize: '0.72rem',
-                          color: '#29b6f6',
+                          fontSize: '0.95rem',
+                          color: 'var(--bone-muted)',
+                          lineHeight: 1.7,
+                          maxWidth: '60ch',
                         }}
                       >
-                        {post.readTime}
-                      </span>
+                        {post.excerpt}
+                      </p>
                     )}
                   </div>
-                  <h3
+                  <span
+                    className="marginalia"
                     style={{
-                      fontFamily: 'Georgia, serif',
-                      fontSize: '1.05rem',
-                      color: '#ffffff',
-                      marginBottom: '12px',
-                      lineHeight: 1.4,
-                      fontWeight: 700,
-                      flex: 1,
+                      color: 'var(--gold)',
+                      fontSize: '0.74rem',
+                      textAlign: 'right',
                     }}
                   >
-                    {post.title}
-                  </h3>
-                  {post.excerpt && (
-                    <p
-                      style={{
-                        fontSize: '0.88rem',
-                        color: '#90caf9',
-                        lineHeight: 1.65,
-                        fontFamily: 'system-ui, sans-serif',
-                        marginBottom: '20px',
-                      }}
-                    >
-                      {post.excerpt}
-                    </p>
-                  )}
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    style={{
-                      fontSize: '0.85rem',
-                      color: '#29b6f6',
-                      textDecoration: 'none',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontWeight: 600,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      marginTop: 'auto',
-                      transition: 'gap 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.gap = '8px'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.gap = '4px'
-                    }}
-                  >
-                    Read more →
-                  </Link>
-                </motion.article>
-              ))
-            : [0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                    {post.readTime || 'Read →'}
+                  </span>
+                </Link>
+              ) : (
+                <div
+                  className="toc-row"
                   style={{
-                    background: '#0a1628',
-                    border: '1px dashed rgba(41, 182, 246, 0.1)',
-                    borderRadius: '12px',
-                    padding: '28px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
+                    display: 'grid',
+                    gridTemplateColumns: '80px 200px 1fr 100px',
+                    gap: '32px',
+                    padding: '32px 0',
+                    borderBottom: '1px solid var(--rule)',
+                    alignItems: 'baseline',
+                    opacity: 0.4,
                   }}
                 >
-                  <div
-                    style={{
-                      width: '80px',
-                      height: '10px',
-                      background: 'rgba(41,182,246,0.1)',
-                      borderRadius: '4px',
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '14px',
-                      background: 'rgba(41,182,246,0.07)',
-                      borderRadius: '4px',
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: '70%',
-                      height: '14px',
-                      background: 'rgba(41,182,246,0.07)',
-                      borderRadius: '4px',
-                    }}
-                  />
+                  <span className="marginalia" style={{ color: 'var(--whisper)' }}>
+                    № {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="marginalia" style={{ color: 'var(--slate)' }}>
+                    Forthcoming
+                  </span>
                   <span
                     style={{
-                      fontSize: '0.82rem',
-                      color: '#546e7a',
-                      fontFamily: 'system-ui, sans-serif',
+                      fontFamily: 'var(--display)',
                       fontStyle: 'italic',
-                      marginTop: '8px',
+                      fontSize: '1.1rem',
+                      color: 'var(--bone-muted)',
+                      fontVariationSettings: '"opsz" 60, "SOFT" 100',
                     }}
                   >
-                    Coming soon
+                    Coming soon —
                   </span>
-                </motion.div>
-              ))}
+                  <span />
+                </div>
+              )}
+            </motion.div>
+          ))}
         </div>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          style={{ textAlign: 'center' }}
-        >
-          <Link
-            href="/blog"
-            style={{
-              display: 'inline-block',
-              padding: '12px 28px',
-              border: '1px solid rgba(41, 182, 246, 0.3)',
-              borderRadius: '6px',
-              color: '#90caf9',
-              textDecoration: 'none',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '0.9rem',
-              fontWeight: 500,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#29b6f6'
-              e.currentTarget.style.color = '#29b6f6'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(41,182,246,0.3)'
-              e.currentTarget.style.color = '#90caf9'
-            }}
-          >
-            View all posts →
-          </Link>
-        </motion.div>
-      </div>
-
-      <style>{`
-        @media (max-width: 900px) {
-          .blog-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (min-width: 600px) and (max-width: 900px) {
-          .blog-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </section>
   )
 }

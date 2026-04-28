@@ -1,208 +1,272 @@
 'use client'
 
+/*
+ * CaseStudy — featured Anvesa case as a single editorial spread.
+ * Kicker → display headline → italic synopsis → marginalia stats → tech ledger.
+ * No rounded card. Borders are hairlines on top/bottom only.
+ */
+
 import { motion } from 'framer-motion'
 
-const techTags = ['Azure AKS', 'RAG', 'Agentic AI', '.NET Core', 'Angular', 'Kubernetes', 'Azure OpenAI', 'SQL Server']
+const techTags = [
+  'Azure AKS',
+  'RAG',
+  'Agentic AI',
+  '.NET Core',
+  'Angular',
+  'Kubernetes',
+  'Azure OpenAI',
+  'SQL Server',
+]
+
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } }
+const rise = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.2, 0.8, 0.2, 1] } },
+}
 
 export default function CaseStudy() {
   return (
     <section
       id="work"
       style={{
-        background: '#050d1a',
-        padding: '110px 24px',
+        background: 'var(--ink)',
+        padding: 'var(--section-y) var(--section-x)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '56px' }}
-        >
-          <p
-            style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
-              marginBottom: '14px',
-            }}
-          >
-            Featured Work
-          </p>
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        style={{ maxWidth: '1240px', margin: '0 auto' }}
+      >
+        <motion.div variants={rise} style={{ marginBottom: '56px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 04 — Featured work</div>
           <h2
             style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-              color: '#ffffff',
+              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.05,
+              maxWidth: '14ch',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
             }}
           >
-            What I&apos;ve Built
+            What I&rsquo;ve{' '}
+            <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+              built.
+            </span>
           </h2>
         </motion.div>
 
-        {/* Main case study card */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          whileHover={{ scale: 1.01 }}
-          style={{
-            background: '#0a1628',
-            border: '1px solid rgba(41, 182, 246, 0.2)',
-            borderRadius: '16px',
-            padding: '48px 48px',
-            marginBottom: '24px',
-            position: 'relative',
-            overflow: 'hidden',
-            cursor: 'default',
-          }}
-          className="case-card"
-        >
-          {/* Background accent */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: '300px',
-              height: '300px',
-              background: 'radial-gradient(circle, rgba(41,182,246,0.05) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }}
-          />
+        <hr className="rule" style={{ marginBottom: '64px' }} />
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-            <div>
-              <span
-                style={{
-                  fontFamily: '"Courier New", monospace',
-                  fontSize: '0.72rem',
-                  letterSpacing: '0.15em',
-                  color: '#546e7a',
-                  textTransform: 'uppercase',
-                  display: 'block',
-                  marginBottom: '8px',
-                }}
-              >
-                Enterprise Platform · 2017–Present
-              </span>
-              <h3
-                style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: 'clamp(1.3rem, 3vw, 1.9rem)',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  lineHeight: 1.2,
-                }}
-              >
-                Anvesa — Enterprise AI eDiscovery Platform
-              </h3>
+        {/* Anvesa spread */}
+        <motion.article
+          variants={rise}
+          className="case-spread"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '180px 1fr',
+            gap: '48px',
+            paddingBottom: '64px',
+            borderBottom: '1px solid var(--rule)',
+            marginBottom: '40px',
+          }}
+        >
+          {/* Marginalia rail */}
+          <aside className="case-rail">
+            <div className="marginalia" style={{ marginBottom: '8px', color: 'var(--slate)' }}>
+              Project № 01
             </div>
-            <span
+            <div
               style={{
-                display: 'inline-block',
-                padding: '6px 16px',
-                background: 'rgba(41, 182, 246, 0.1)',
-                border: '1px solid rgba(41, 182, 246, 0.4)',
-                borderRadius: '20px',
-                fontSize: '0.78rem',
-                color: '#29b6f6',
-                fontFamily: '"Courier New", monospace',
-                letterSpacing: '0.05em',
-                whiteSpace: 'nowrap',
+                fontFamily: 'var(--display)',
+                fontSize: '1.4rem',
+                fontWeight: 300,
+                color: 'var(--bone)',
+                lineHeight: 1.15,
+                marginBottom: '32px',
+                fontVariationSettings: '"opsz" 72',
               }}
             >
-              ● Live in Production
-            </span>
-          </div>
+              2017 —
+              <br />
+              <span style={{ fontStyle: 'italic', color: 'var(--gold)' }}>now.</span>
+            </div>
 
-          <p
-            style={{
-              fontSize: '1.05rem',
-              color: '#90caf9',
-              lineHeight: 1.8,
-              marginBottom: '32px',
-              maxWidth: '800px',
-              fontFamily: 'system-ui, sans-serif',
-            }}
-          >
-            Built an AI-native, Azure-powered eDiscovery platform from zero to production. Serving 15+ enterprise clients across the US, India, and Australia. Architected AKS-based distributed systems, RAG pipelines, and Agentic AI workflows that process millions of documents daily. Led every layer — from cloud infrastructure to product strategy.
-          </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {techTags.map((tag) => (
+            <div className="marginalia" style={{ marginBottom: '6px' }}>Status</div>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'var(--mono)',
+                fontSize: '0.74rem',
+                color: 'var(--bone)',
+                letterSpacing: '0.06em',
+                marginBottom: '24px',
+              }}
+            >
               <span
-                key={tag}
+                aria-hidden
                 style={{
-                  padding: '5px 12px',
-                  background: 'rgba(41, 182, 246, 0.06)',
-                  border: '1px solid rgba(41, 182, 246, 0.15)',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem',
-                  color: '#90caf9',
-                  fontFamily: '"Courier New", monospace',
-                  letterSpacing: '0.02em',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: 'var(--gold)',
+                  boxShadow: '0 0 8px var(--gold)',
                 }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+              />
+              In production
+            </div>
 
-        {/* Placeholder row */}
+            <div className="marginalia" style={{ marginBottom: '6px' }}>Reach</div>
+            <div
+              style={{
+                fontFamily: 'var(--body)',
+                fontSize: '0.9rem',
+                color: 'var(--bone-muted)',
+                lineHeight: 1.6,
+              }}
+            >
+              15+ enterprise clients
+              <br />
+              US · India · Australia
+            </div>
+          </aside>
+
+          {/* Body */}
+          <div>
+            <p className="marginalia" style={{ color: 'var(--slate)', marginBottom: '14px' }}>
+              Enterprise AI Platform · eDiscovery
+            </p>
+
+            <h3
+              style={{
+                fontFamily: 'var(--display)',
+                fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
+                fontWeight: 400,
+                lineHeight: 1.1,
+                letterSpacing: '-0.022em',
+                marginBottom: '28px',
+                color: 'var(--bone)',
+                fontVariationSettings: '"opsz" 144, "SOFT" 30',
+                maxWidth: '24ch',
+              }}
+            >
+              Anvesa — an{' '}
+              <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+                AI-native
+              </span>{' '}
+              eDiscovery platform, built ground-up.
+            </h3>
+
+            <p className="lede" style={{ fontSize: '1.18rem', marginBottom: '28px', maxWidth: '54ch' }}>
+              Built from zero to production over seven years. Now serves
+              fifteen enterprise clients across three continents, processing
+              millions of documents daily.
+            </p>
+
+            <p
+              style={{
+                fontSize: '1.02rem',
+                color: 'var(--bone-muted)',
+                lineHeight: 1.85,
+                marginBottom: '36px',
+                maxWidth: '64ch',
+              }}
+            >
+              Architected AKS-based distributed systems, RAG pipelines, and
+              Agentic AI workflows. Led every layer — from the cloud
+              infrastructure that holds it up, to the product strategy that
+              decides where it&rsquo;s going next.
+            </p>
+
+            {/* Tech ledger */}
+            <div className="marginalia" style={{ marginBottom: '14px', color: 'var(--slate)' }}>
+              Stack
+            </div>
+            <ul
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0',
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                borderTop: '1px solid var(--rule)',
+                borderBottom: '1px solid var(--rule)',
+              }}
+            >
+              {techTags.map((tag, i) => (
+                <li
+                  key={tag}
+                  style={{
+                    flex: '1 0 auto',
+                    padding: '12px 18px 12px 0',
+                    marginRight: '24px',
+                    fontFamily: 'var(--mono)',
+                    fontSize: '0.78rem',
+                    color: 'var(--bone)',
+                    letterSpacing: '0.04em',
+                    borderRight: i < techTags.length - 1 ? '1px solid var(--rule)' : '0',
+                    paddingRight: '24px',
+                  }}
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.article>
+
+        {/* More work — placeholder row, also editorial */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.15 }}
+          variants={rise}
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '16px',
+            gap: '0',
+            borderTop: '1px solid var(--rule)',
+            borderBottom: '1px solid var(--rule)',
           }}
           className="placeholder-grid"
         >
-          {['More case studies coming soon', 'Client projects under NDA'].map((label, i) => (
+          {[
+            { num: '02', label: 'More case studies coming soon' },
+            { num: '03', label: 'Client projects under NDA' },
+          ].map((it, i) => (
             <div
-              key={i}
+              key={it.num}
               style={{
-                background: 'rgba(10, 22, 40, 0.5)',
-                border: '1px dashed rgba(41, 182, 246, 0.1)',
-                borderRadius: '12px',
-                padding: '36px 28px',
+                padding: '32px 28px',
+                borderRight: i === 0 ? '1px solid var(--rule)' : '0',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
+                alignItems: 'baseline',
+                gap: '20px',
               }}
             >
-              <span style={{ fontSize: '1.2rem', opacity: 0.3 }}>◎</span>
+              <span className="marginalia" style={{ color: 'var(--whisper)', fontSize: '0.78rem' }}>
+                № {it.num}
+              </span>
               <span
                 style={{
-                  fontSize: '0.85rem',
-                  color: '#546e7a',
-                  fontFamily: 'system-ui, sans-serif',
+                  fontFamily: 'var(--display)',
                   fontStyle: 'italic',
+                  fontSize: '1.05rem',
+                  color: 'var(--bone-muted)',
+                  fontVariationSettings: '"opsz" 60, "SOFT" 100',
                 }}
               >
-                {label}
+                {it.label}
               </span>
             </div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
 
-      <style>{`
-        @media (max-width: 600px) {
-          .case-card { padding: 28px 20px !important; }
-          .placeholder-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   )
 }

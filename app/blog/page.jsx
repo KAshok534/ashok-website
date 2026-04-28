@@ -2,22 +2,26 @@ import Link from 'next/link'
 import { getPosts } from '@/lib/posts'
 
 export const metadata = {
-  title: 'Blog — Thoughts on AI & Engineering',
+  title: 'Journal — Notes on AI & Engineering',
   description:
     'Ashok Kumar Kunchala writes about building enterprise AI systems, RAG architecture, Azure, and engineering leadership. Real lessons from production — not theory.',
   openGraph: {
-    title: 'Blog — Ashok Kumar Kunchala',
+    title: 'Journal — Ashok Kumar Kunchala',
     description: 'Real lessons from building enterprise AI systems. RAG, Agentic AI, Azure, and engineering leadership.',
     url: 'https://ashokkunchala.com/blog',
   },
 }
 
+// Force UTC parse + format so SSR and client render the same date string.
 function formatDate(dateStr) {
   try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const [y, m, d] = String(dateStr).split('-').map(Number)
+    const date = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC',
     })
   } catch {
     return dateStr
@@ -33,199 +37,196 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="blog-page">
+    <div
+      style={{
+        background: 'var(--ink)',
+        minHeight: '100vh',
+        paddingTop: '120px',
+      }}
+    >
       <style>{`
-        .blog-page {
-          background: #050d1a;
-          min-height: 100vh;
-          padding-top: 100px;
-        }
-        .blog-inner {
-          max-width: 860px;
-          margin: 0 auto;
-          padding: 60px 24px;
-        }
-        .post-article {
-          background: #0a1628;
-          padding: 32px 36px;
-          border-bottom: 1px solid rgba(41,182,246,0.08);
-          transition: background 0.2s;
-        }
-        .post-article:last-child { border-bottom: none; }
-        .post-article:hover { background: #0d1e35; }
-        .post-title-link {
-          font-family: Georgia, serif;
-          font-size: 1.25rem;
-          color: #ffffff;
-          text-decoration: none;
-          line-height: 1.35;
-          font-weight: 700;
-          transition: color 0.2s;
-          display: block;
-          margin-bottom: 10px;
-        }
-        .post-title-link:hover { color: #29b6f6; }
+        .toc-row { transition: background 220ms ease; }
+        .toc-row:hover { background: rgba(201,168,106,0.04); }
+        .toc-row:hover .toc-title { color: var(--gold); }
         .back-link {
-          color: #546e7a;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-family: var(--mono);
+          font-size: 0.74rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--bone-muted);
           text-decoration: none;
-          font-family: system-ui, sans-serif;
-          font-size: 0.88rem;
-          transition: color 0.2s;
-          display: inline-block;
-          margin-top: 60px;
+          margin-top: 64px;
+          transition: color 220ms ease;
         }
-        .back-link:hover { color: #29b6f6; }
+        .back-link:hover { color: var(--gold); }
       `}</style>
 
-      <div className="blog-inner">
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px var(--section-x) calc(var(--section-y) - 40px)' }}>
         {/* Header */}
-        <div style={{ marginBottom: '72px' }}>
-          <p
-            style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
-              marginBottom: '14px',
-            }}
-          >
-            Writing
-          </p>
+        <header style={{ marginBottom: '72px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>
+            § Journal — collected entries
+          </div>
           <h1
             style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(2rem, 5vw, 3.2rem)',
-              color: '#ffffff',
-              marginBottom: '16px',
-              lineHeight: 1.15,
+              fontSize: 'clamp(2.6rem, 7vw, 5rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
+              maxWidth: '14ch',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
+              marginBottom: '24px',
             }}
           >
-            Thoughts on AI &amp; Engineering
+            Notes on AI{' '}
+            <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+              & engineering.
+            </span>
           </h1>
           <p
-            style={{
-              fontSize: '1.05rem',
-              color: '#546e7a',
-              fontFamily: 'system-ui, sans-serif',
-              lineHeight: 1.7,
-            }}
+            className="lede"
+            style={{ maxWidth: '46ch', fontSize: '1.25rem' }}
           >
-            Real lessons from building enterprise AI systems in production — not theory, not hype.
+            Real lessons from building enterprise AI systems in production —
+            not theory, not hype.
           </p>
-        </div>
+        </header>
+
+        <hr className="rule" />
 
         {/* Posts */}
         {posts.length === 0 ? (
           <div
             style={{
-              background: '#0a1628',
-              border: '1px dashed rgba(41,182,246,0.15)',
-              borderRadius: '12px',
-              padding: '60px 40px',
-              textAlign: 'center',
+              padding: '80px 0',
+              textAlign: 'left',
+              borderBottom: '1px solid var(--rule)',
             }}
           >
-            <p style={{ color: '#546e7a', fontFamily: 'system-ui, sans-serif', fontSize: '1rem' }}>
-              First post coming soon. Check back shortly.
+            <p className="marginalia" style={{ marginBottom: '14px', color: 'var(--slate)' }}>
+              Forthcoming
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--display)',
+                fontStyle: 'italic',
+                fontSize: '1.4rem',
+                color: 'var(--bone-muted)',
+                fontVariationSettings: '"opsz" 60, "SOFT" 100',
+                maxWidth: '40ch',
+              }}
+            >
+              First entry is being written. Please check back shortly —
+              or follow on LinkedIn for the announcement.
             </p>
           </div>
         ) : (
-          <div
-            style={{
-              background: 'rgba(41,182,246,0.06)',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              border: '1px solid rgba(41,182,246,0.1)',
-            }}
-          >
-            {posts.map((post) => (
-              <article key={post.slug} className="post-article">
-                <div
+          <div>
+            {posts.map((post, i) => (
+              <article key={post.slug}>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="toc-row"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '12px',
-                    flexWrap: 'wrap',
+                    display: 'grid',
+                    gridTemplateColumns: '70px 200px 1fr 110px',
+                    gap: '32px',
+                    padding: '36px 16px',
+                    borderBottom: '1px solid var(--rule)',
+                    alignItems: 'baseline',
+                    textDecoration: 'none',
                   }}
                 >
+                  <span className="marginalia" style={{ color: 'var(--whisper)', fontSize: '0.78rem' }}>
+                    № {String(i + 1).padStart(2, '0')}
+                  </span>
                   <time
                     dateTime={post.date}
-                    style={{
-                      fontFamily: '"Courier New", monospace',
-                      fontSize: '0.75rem',
-                      color: '#546e7a',
-                      letterSpacing: '0.05em',
-                    }}
+                    className="marginalia"
+                    style={{ color: 'var(--slate)', fontSize: '0.74rem' }}
                   >
                     {formatDate(post.date)}
                   </time>
-                  {post.readTime && (
-                    <span
+                  <div>
+                    <h2
+                      className="toc-title"
                       style={{
-                        fontFamily: '"Courier New", monospace',
-                        fontSize: '0.72rem',
-                        color: '#29b6f6',
-                        padding: '2px 8px',
-                        border: '1px solid rgba(41,182,246,0.2)',
-                        borderRadius: '10px',
+                        fontFamily: 'var(--display)',
+                        fontSize: 'clamp(1.3rem, 2.6vw, 1.7rem)',
+                        fontWeight: 400,
+                        color: 'var(--bone)',
+                        lineHeight: 1.2,
+                        letterSpacing: '-0.018em',
+                        marginBottom: '8px',
+                        fontVariationSettings: '"opsz" 96',
+                        transition: 'color 220ms ease',
                       }}
                     >
-                      {post.readTime}
-                    </span>
-                  )}
-                </div>
-
-                <h2 style={{ marginBottom: '10px' }}>
-                  <Link href={`/blog/${post.slug}`} className="post-title-link">
-                    {post.title}
-                  </Link>
-                </h2>
-
-                {post.excerpt && (
-                  <p
-                    style={{
-                      fontSize: '0.92rem',
-                      color: '#90caf9',
-                      lineHeight: 1.7,
-                      fontFamily: 'system-ui, sans-serif',
-                      marginBottom: '16px',
-                    }}
-                  >
-                    {post.excerpt}
-                  </p>
-                )}
-
-                {post.tags && post.tags.length > 0 && (
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
+                      {post.title}
+                    </h2>
+                    {post.excerpt && (
+                      <p
                         style={{
-                          padding: '3px 10px',
-                          background: 'rgba(41,182,246,0.06)',
-                          border: '1px solid rgba(41,182,246,0.12)',
-                          borderRadius: '4px',
-                          fontSize: '0.75rem',
-                          color: '#90caf9',
-                          fontFamily: '"Courier New", monospace',
+                          fontSize: '0.96rem',
+                          color: 'var(--bone-muted)',
+                          lineHeight: 1.7,
+                          maxWidth: '60ch',
+                          marginBottom: post.tags?.length ? '14px' : 0,
                         }}
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        {post.excerpt}
+                      </p>
+                    )}
+                    {post.tags && post.tags.length > 0 && (
+                      <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap' }}>
+                        {post.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="marginalia"
+                            style={{ color: 'var(--slate)' }}
+                          >
+                            ▸ {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                  <span
+                    className="marginalia"
+                    style={{
+                      color: 'var(--gold)',
+                      fontSize: '0.74rem',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {post.readTime || 'Read →'}
+                  </span>
+                </Link>
               </article>
             ))}
           </div>
         )}
 
         <Link href="/" className="back-link">
-          ← ashokkunchala.com
+          <span>←</span>
+          <span>Back to ashokkunchala.com</span>
         </Link>
       </div>
+
+      <style>{`
+        @media (max-width: 760px) {
+          .toc-row {
+            grid-template-columns: 50px 1fr !important;
+            gap: 14px !important;
+          }
+          .toc-row > time,
+          .toc-row > span:nth-child(4) { display: none; }
+          .toc-row > div { grid-column: 1 / -1; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -1,30 +1,44 @@
 'use client'
 
+/*
+ * Services — three offerings as numbered editorial entries, not card grid.
+ * Each: large numeral, italic kicker, prose body, hairline rule, ghost CTA.
+ */
+
 import { motion } from 'framer-motion'
 
 const services = [
   {
     number: '01',
-    title: 'AI System Architecture & Build',
+    kicker: 'Architecture & Build',
+    title: 'AI systems, designed and shipped to production.',
     description:
-      'Design and build production-grade RAG pipelines, Agentic AI workflows, and LLM-powered enterprise applications on Azure. From architecture to deployment.',
-    cta: 'Discuss Project',
+      'Design and build production-grade RAG pipelines, Agentic AI workflows, and LLM-powered enterprise applications on Azure. From architecture to deployment — the whole stack, hand-led.',
+    cta: 'Discuss a project',
   },
   {
     number: '02',
-    title: 'AI System Audit & Improvement',
+    kicker: 'Audit & Improvement',
+    title: 'Already-running systems, made faster, cheaper, more reliable.',
     description:
-      'Audit, optimize, and scale your existing AI infrastructure. Fix performance bottlenecks, reduce costs, and improve reliability for systems already in production.',
-    cta: 'Get an Audit',
+      'Audit, optimize, and scale existing AI infrastructure. Performance bottlenecks. Cost overruns. Reliability gaps. Brought from "works in demo" to "holds up under enterprise load."',
+    cta: 'Request an audit',
   },
   {
     number: '03',
-    title: 'Advisory & Strategic Consulting',
+    kicker: 'Advisory',
+    title: 'Strategic counsel for technology leaders.',
     description:
-      'Strategic advisory for CTOs and engineering leaders adopting enterprise AI — architecture reviews, team guidance, and AI roadmap planning.',
-    cta: 'Start a Conversation',
+      'For CTOs and engineering leaders adopting enterprise AI — architecture reviews, team guidance, and roadmap planning. Pragmatic, board-aware, grounded in production reality.',
+    cta: 'Begin a conversation',
   },
 ]
+
+const stagger = { visible: { transition: { staggerChildren: 0.10 } } }
+const rise = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.2, 0.8, 0.2, 1] } },
+}
 
 export default function Services() {
   const scrollToContact = () => {
@@ -38,161 +52,132 @@ export default function Services() {
     <section
       id="services"
       style={{
-        background: '#070e1c',
-        padding: '110px 24px',
+        background: 'var(--ink-warm)',
+        padding: 'var(--section-y) var(--section-x)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '16px' }}
-        >
-          <p
-            style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
-              marginBottom: '14px',
-            }}
-          >
-            Consulting & Advisory
-          </p>
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        style={{ maxWidth: '1240px', margin: '0 auto' }}
+      >
+        <motion.div variants={rise} style={{ marginBottom: '24px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 05 — Working together</div>
           <h2
             style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-              color: '#ffffff',
+              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.05,
+              maxWidth: '20ch',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
               marginBottom: '14px',
             }}
           >
-            Work With Me
+            Three ways to{' '}
+            <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+              work with me.
+            </span>
           </h2>
           <p
             style={{
-              fontSize: '1rem',
-              color: '#546e7a',
-              fontFamily: 'system-ui, sans-serif',
-              marginBottom: '56px',
+              fontSize: '1.02rem',
+              color: 'var(--bone-muted)',
+              maxWidth: '54ch',
+              marginBottom: '64px',
             }}
           >
             Available for select consulting and advisory engagements globally.
+            Scope and rate are negotiated per engagement — let&rsquo;s talk first.
           </p>
         </motion.div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-          }}
-          className="services-grid"
-        >
-          {services.map((svc, i) => (
+        <hr className="rule" />
+
+        {/* Three editorial entries — full width, hairline-separated */}
+        <div>
+          {services.map((svc) => (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              whileHover={{ scale: 1.02 }}
+              key={svc.number}
+              variants={rise}
+              className="service-row"
               style={{
-                background: '#0a1628',
-                border: '1px solid rgba(41, 182, 246, 0.12)',
-                borderRadius: '12px',
-                padding: '36px 28px',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'border-color 0.2s',
-                cursor: 'default',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(41, 182, 246, 0.3)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(41, 182, 246, 0.12)'
+                display: 'grid',
+                gridTemplateColumns: '120px 1fr 220px',
+                gap: '40px',
+                padding: '48px 0',
+                borderBottom: '1px solid var(--rule)',
+                alignItems: 'start',
               }}
             >
-              <span
+              {/* Numeral */}
+              <div
                 style={{
-                  fontFamily: '"Courier New", monospace',
-                  fontSize: '0.75rem',
-                  color: '#29b6f6',
-                  letterSpacing: '0.1em',
-                  marginBottom: '20px',
-                  display: 'block',
+                  fontFamily: 'var(--display)',
+                  fontSize: 'clamp(2.6rem, 5vw, 4rem)',
+                  fontWeight: 300,
+                  color: 'var(--gold)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.04em',
+                  fontVariationSettings: '"opsz" 144, "SOFT" 30',
                 }}
               >
                 {svc.number}
-              </span>
-              <h3
-                style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '1.2rem',
-                  color: '#ffffff',
-                  marginBottom: '16px',
-                  fontWeight: 700,
-                  lineHeight: 1.3,
-                }}
-              >
-                {svc.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#90caf9',
-                  lineHeight: 1.75,
-                  fontFamily: 'system-ui, sans-serif',
-                  flex: 1,
-                  marginBottom: '28px',
-                }}
-              >
-                {svc.description}
-              </p>
+              </div>
 
-              <button
-                onClick={scrollToContact}
-                style={{
-                  padding: '10px 20px',
-                  background: 'transparent',
-                  border: '1px solid #29b6f6',
-                  borderRadius: '6px',
-                  color: '#29b6f6',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'system-ui, sans-serif',
-                  transition: 'all 0.2s',
-                  textAlign: 'center',
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = '#29b6f6'
-                  e.target.style.color = '#050d1a'
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'transparent'
-                  e.target.style.color = '#29b6f6'
-                }}
-              >
-                {svc.cta}
-              </button>
+              {/* Body */}
+              <div>
+                <p
+                  className="marginalia"
+                  style={{ color: 'var(--slate)', marginBottom: '12px' }}
+                >
+                  {svc.kicker}
+                </p>
+                <h3
+                  style={{
+                    fontFamily: 'var(--display)',
+                    fontSize: 'clamp(1.4rem, 2.6vw, 1.85rem)',
+                    fontWeight: 400,
+                    color: 'var(--bone)',
+                    lineHeight: 1.2,
+                    marginBottom: '18px',
+                    fontVariationSettings: '"opsz" 96',
+                    letterSpacing: '-0.018em',
+                    maxWidth: '24ch',
+                  }}
+                >
+                  {svc.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: '1rem',
+                    color: 'var(--bone-muted)',
+                    lineHeight: 1.8,
+                    maxWidth: '56ch',
+                  }}
+                >
+                  {svc.description}
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="service-cta">
+                <button
+                  onClick={scrollToContact}
+                  className="btn-ghost"
+                  style={{ fontSize: '0.78rem' }}
+                >
+                  <span>{svc.cta}</span>
+                  <span className="arrow" style={{ display: 'inline-block', transition: 'transform 240ms ease' }}>→</span>
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .services-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (min-width: 600px) and (max-width: 900px) {
-          .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </section>
   )
 }

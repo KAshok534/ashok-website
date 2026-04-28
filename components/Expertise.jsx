@@ -1,11 +1,17 @@
 'use client'
 
+/*
+ * Expertise — replaced 3 cyan boxed cards with an editorial three-column
+ * specimen sheet. Each column is a vertical list, separated by hairlines.
+ * Skills set as monospace items with an em-dash bullet — no pills, no chips.
+ */
+
 import { motion } from 'framer-motion'
 
 const categories = [
   {
-    title: 'AI & Intelligence',
-    icon: '◈',
+    title: 'Intelligence',
+    subtitle: 'AI · LLM · Reasoning systems',
     skills: [
       'Agentic AI Systems',
       'RAG Architecture',
@@ -15,8 +21,8 @@ const categories = [
     ],
   },
   {
-    title: 'Cloud & Infrastructure',
-    icon: '◉',
+    title: 'Infrastructure',
+    subtitle: 'Cloud · Containers · IaC',
     skills: [
       'Azure Cloud (AKS)',
       'Cloud-Native Architecture',
@@ -26,8 +32,8 @@ const categories = [
     ],
   },
   {
-    title: 'Engineering & Product',
-    icon: '◎',
+    title: 'Engineering',
+    subtitle: 'Stack · Product · Leadership',
     skills: [
       '.NET Core / C#',
       'Angular',
@@ -38,13 +44,10 @@ const categories = [
   },
 ]
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay: i * 0.12, ease: 'easeOut' },
-  }),
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } }
+const rise = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.2, 0.8, 0.2, 1] } },
 }
 
 export default function Expertise() {
@@ -52,139 +55,125 @@ export default function Expertise() {
     <section
       id="expertise"
       style={{
-        background: '#050d1a',
-        padding: '110px 24px',
+        background: 'var(--ink)',
+        padding: 'var(--section-y) var(--section-x)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '64px' }}
-        >
-          <p
-            style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
-              marginBottom: '14px',
-            }}
-          >
-            Skills & Stack
-          </p>
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        style={{ maxWidth: '1240px', margin: '0 auto' }}
+      >
+        <motion.div variants={rise} style={{ marginBottom: '56px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 02 — Practice areas</div>
           <h2
             style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-              color: '#ffffff',
-              lineHeight: 1.2,
+              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.05,
+              maxWidth: '18ch',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
             }}
           >
-            What I Work With
+            What I work with —
+            <span style={{ fontStyle: 'italic', color: 'var(--bone-muted)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}> the toolkit.</span>
           </h2>
         </motion.div>
 
+        <hr className="rule" style={{ marginBottom: '64px' }} />
+
+        {/* Three-column specimen sheet */}
         <div
+          className="expertise-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
+            gap: '0',
           }}
-          className="expertise-grid"
         >
           {categories.map((cat, i) => (
             <motion.div
               key={cat.title}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
+              variants={rise}
               style={{
-                background: '#0a1628',
-                border: '1px solid rgba(41, 182, 246, 0.12)',
-                borderRadius: '12px',
-                padding: '32px 28px',
-                cursor: 'default',
-                transition: 'border-color 0.2s',
+                padding: '0 36px',
+                borderRight: i < categories.length - 1 ? '1px solid var(--rule)' : '0',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(41, 182, 246, 0.35)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(41, 182, 246, 0.12)'
-              }}
+              className="expertise-col"
             >
-              <div
-                style={{
-                  fontSize: '1.4rem',
-                  color: '#29b6f6',
-                  marginBottom: '8px',
-                  fontFamily: 'Georgia, serif',
-                }}
-              >
-                {cat.icon}
+              {/* Roman numeral marker */}
+              <div className="marginalia" style={{ marginBottom: '16px', color: 'var(--slate)' }}>
+                {['I', 'II', 'III'][i]}
               </div>
+
               <h3
                 style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '1.1rem',
-                  color: '#ffffff',
-                  marginBottom: '24px',
-                  fontWeight: 700,
+                  fontFamily: 'var(--display)',
+                  fontSize: '1.7rem',
+                  fontWeight: 400,
+                  color: 'var(--bone)',
+                  marginBottom: '6px',
+                  fontVariationSettings: '"opsz" 96',
+                  letterSpacing: '-0.02em',
                 }}
               >
                 {cat.title}
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {cat.skills.map((skill) => (
-                  <span
+
+              <p
+                style={{
+                  fontFamily: 'var(--display)',
+                  fontStyle: 'italic',
+                  fontSize: '0.92rem',
+                  color: 'var(--bone-muted)',
+                  marginBottom: '32px',
+                  fontVariationSettings: '"opsz" 36, "SOFT" 100',
+                }}
+              >
+                {cat.subtitle}
+              </p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {cat.skills.map((skill, j) => (
+                  <li
                     key={skill}
                     style={{
-                      display: 'inline-block',
-                      padding: '7px 14px',
-                      background: 'rgba(41, 182, 246, 0.06)',
-                      border: '1px solid rgba(41, 182, 246, 0.15)',
-                      borderRadius: '6px',
-                      fontSize: '0.85rem',
-                      color: '#90caf9',
-                      fontFamily: 'system-ui, sans-serif',
-                      transition: 'all 0.2s',
-                      cursor: 'default',
+                      display: 'flex',
+                      gap: '14px',
+                      padding: '12px 0',
+                      borderTop: '1px solid var(--rule)',
+                      borderBottom: j === cat.skills.length - 1 ? '1px solid var(--rule)' : '0',
+                      transition: 'color 220ms ease',
                     }}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = 'rgba(41,182,246,0.12)'
-                      e.target.style.color = '#ffffff'
-                      e.target.style.borderColor = 'rgba(41,182,246,0.35)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = 'rgba(41, 182, 246, 0.06)'
-                      e.target.style.color = '#90caf9'
-                      e.target.style.borderColor = 'rgba(41, 182, 246, 0.15)'
-                    }}
+                    className="expertise-skill"
                   >
-                    {skill}
-                  </span>
+                    <span
+                      className="marginalia"
+                      style={{ minWidth: '20px', color: 'var(--whisper)' }}
+                    >
+                      {String(j + 1).padStart(2, '0')}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--body)',
+                        fontSize: '0.96rem',
+                        color: 'var(--bone)',
+                        fontWeight: 400,
+                      }}
+                    >
+                      {skill}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .expertise-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (min-width: 600px) and (max-width: 900px) {
-          .expertise-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </section>
   )
 }

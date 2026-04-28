@@ -1,8 +1,34 @@
 import './globals.css'
+import { Fraunces, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+
+// ─── Editorial type system ────────────────────────────────────────────
+// Fraunces  — variable display serif with optical sizing + soft axis.
+// Inter Tight — refined sans for body, tighter than the regular Inter.
+// JetBrains Mono — labels, marginalia, eyebrows.
+// Variable fonts: omit `weight` so the full axis range is loaded.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-fraunces',
+  axes: ['SOFT', 'opsz'],
+  display: 'swap',
+})
+
+const interTight = Inter_Tight({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata = {
   title: {
@@ -55,19 +81,21 @@ export const metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
+    googleBot: { index: true, follow: true },
   },
-  alternates: {
-    canonical: 'https://ashokkunchala.com',
-  },
+  alternates: { canonical: 'https://ashokkunchala.com' },
+}
+
+export const viewport = {
+  themeColor: '#0e0d0b',
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${interTight.variable} ${jetbrains.variable}`}
+    >
       <body>
         <Navbar />
         <main>{children}</main>

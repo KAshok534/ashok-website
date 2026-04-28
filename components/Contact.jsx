@@ -1,48 +1,38 @@
 'use client'
 
+/*
+ * Contact — editorial correspondence form.
+ * Inputs lose the rounded card look — underlined hairline fields instead.
+ * Asymmetric grid: address card on left (like a letterhead), form on right.
+ */
+
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 const contactInfo = [
-  {
-    label: 'Email',
-    value: 'ashok@ashokkunchala.com',
-    href: 'mailto:ashok@ashokkunchala.com',
-    icon: '✉',
-  },
-  {
-    label: 'LinkedIn',
-    value: 'linkedin.com/in/ashok-kumar-kunchala',
-    href: 'https://linkedin.com/in/ashok-kumar-kunchala',
-    icon: '⟶',
-  },
-  {
-    label: 'Location',
-    value: 'Hyderabad, India · Available globally',
-    href: null,
-    icon: '◎',
-  },
-  {
-    label: 'Response time',
-    value: 'Usually within 24 hours',
-    href: null,
-    icon: '◷',
-  },
+  { label: 'Correspondence', value: 'ashok@ashokkunchala.com', href: 'mailto:ashok@ashokkunchala.com' },
+  { label: 'Profile',         value: 'linkedin.com/in/ashok-kumar-kunchala', href: 'https://linkedin.com/in/ashok-kumar-kunchala' },
+  { label: 'Practising from', value: 'Hyderabad, India · serving globally', href: null },
+  { label: 'Reply within',    value: 'Twenty-four hours, typically', href: null },
 ]
 
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } }
+const rise = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.2, 0.8, 0.2, 1] } },
+}
+
 export default function Contact() {
-  const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [status, setStatus] = useState('idle')
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' })
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+  const handleChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('sending')
     try {
-      // TODO: Replace YOUR_FORM_ID with your Formspree form ID from https://formspree.io
       const res = await fetch('https://formspree.io/f/xlgonjal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -51,298 +41,293 @@ export default function Contact() {
       if (res.ok) {
         setStatus('sent')
         setForm({ name: '', email: '', company: '', message: '' })
-      } else {
-        setStatus('error')
-      }
+      } else setStatus('error')
     } catch {
       setStatus('error')
     }
   }
 
-  const inputStyle = {
+  // Underlined hairline field
+  const fieldLabelStyle = {
+    display: 'block',
+    fontFamily: 'var(--mono)',
+    fontSize: '0.7rem',
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'var(--slate)',
+    marginBottom: '10px',
+  }
+  const fieldStyle = {
     width: '100%',
-    padding: '12px 16px',
-    background: 'rgba(10, 22, 40, 0.8)',
-    border: '1px solid rgba(41, 182, 246, 0.15)',
-    borderRadius: '8px',
-    color: '#ffffff',
-    fontSize: '0.95rem',
-    fontFamily: 'system-ui, sans-serif',
+    padding: '10px 0',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '1px solid var(--rule-strong)',
+    color: 'var(--bone)',
+    fontFamily: 'var(--body)',
+    fontSize: '1rem',
     outline: 'none',
-    transition: 'border-color 0.2s',
+    transition: 'border-color 240ms ease',
   }
 
   return (
     <section
       id="contact"
       style={{
-        background: '#070e1c',
-        padding: '110px 24px 80px',
+        background: 'var(--ink-warm)',
+        padding: 'var(--section-y) var(--section-x) calc(var(--section-y) - 30px)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '64px' }}
-        >
-          <p
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        style={{ maxWidth: '1240px', margin: '0 auto' }}
+      >
+        <motion.div variants={rise} style={{ marginBottom: '64px' }}>
+          <div className="eyebrow" style={{ marginBottom: '14px' }}>§ 07 — Correspondence</div>
+          <h2
             style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.2em',
-              color: '#29b6f6',
-              textTransform: 'uppercase',
+              fontSize: 'clamp(2.4rem, 5.5vw, 4rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.04,
+              maxWidth: '14ch',
+              fontVariationSettings: '"opsz" 144, "SOFT" 30',
               marginBottom: '14px',
             }}
           >
-            Get in Touch
-          </p>
-          <h2
-            style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-              color: '#ffffff',
-              marginBottom: '12px',
-            }}
-          >
-            Let&apos;s Build Something
+            Let&rsquo;s build{' '}
+            <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+              something.
+            </span>
           </h2>
           <p
             style={{
-              fontSize: '1rem',
-              color: '#546e7a',
-              fontFamily: 'system-ui, sans-serif',
+              fontSize: '1.05rem',
+              color: 'var(--bone-muted)',
+              maxWidth: '54ch',
             }}
           >
             Open to consulting, advisory, and strategic conversations globally.
           </p>
         </motion.div>
 
+        <hr className="rule" style={{ marginBottom: '64px' }} />
+
         <div
+          className="contact-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1.4fr',
-            gap: '60px',
+            gridTemplateColumns: '1fr 1.6fr',
+            gap: '88px',
             alignItems: 'start',
           }}
-          className="contact-grid"
         >
-          {/* Info column */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          {/* Letterhead */}
+          <motion.aside variants={rise}>
+            <div className="marginalia" style={{ marginBottom: '24px', color: 'var(--slate)' }}>
+              The studio
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {contactInfo.map((item) => (
-                <div key={item.label} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <span
-                    style={{
-                      fontSize: '1rem',
-                      color: '#29b6f6',
-                      width: '20px',
-                      flexShrink: 0,
-                      marginTop: '2px',
-                    }}
-                  >
-                    {item.icon}
-                  </span>
-                  <div>
-                    <div
+                <li
+                  key={item.label}
+                  style={{
+                    padding: '20px 0',
+                    borderTop: '1px solid var(--rule)',
+                  }}
+                >
+                  <div className="marginalia" style={{ marginBottom: '6px', color: 'var(--slate)' }}>
+                    {item.label}
+                  </div>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="editorial-link"
                       style={{
-                        fontFamily: '"Courier New", monospace',
-                        fontSize: '0.7rem',
-                        letterSpacing: '0.1em',
-                        color: '#546e7a',
-                        textTransform: 'uppercase',
-                        marginBottom: '4px',
+                        fontFamily: 'var(--display)',
+                        fontStyle: item.label === 'Correspondence' ? 'italic' : 'normal',
+                        fontSize: '1.05rem',
+                        color: 'var(--bone)',
+                        fontVariationSettings: '"opsz" 36, "SOFT" 100',
                       }}
                     >
-                      {item.label}
-                    </div>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        target={item.href.startsWith('http') ? '_blank' : undefined}
-                        rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        style={{
-                          color: '#90caf9',
-                          fontSize: '0.95rem',
-                          textDecoration: 'none',
-                          fontFamily: 'system-ui, sans-serif',
-                          transition: 'color 0.2s',
-                        }}
-                        onMouseEnter={(e) => (e.target.style.color = '#29b6f6')}
-                        onMouseLeave={(e) => (e.target.style.color = '#90caf9')}
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <span
-                        style={{
-                          color: '#90caf9',
-                          fontSize: '0.95rem',
-                          fontFamily: 'system-ui, sans-serif',
-                        }}
-                      >
-                        {item.value}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                      {item.value}
+                    </a>
+                  ) : (
+                    <span
+                      style={{
+                        fontFamily: 'var(--display)',
+                        fontSize: '1.05rem',
+                        color: 'var(--bone)',
+                        fontVariationSettings: '"opsz" 36',
+                      }}
+                    >
+                      {item.value}
+                    </span>
+                  )}
+                </li>
               ))}
-            </div>
-          </motion.div>
+              <li style={{ borderTop: '1px solid var(--rule)' }} />
+            </ul>
+          </motion.aside>
 
-          {/* Form column */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          {/* Form */}
+          <motion.div variants={rise}>
             {status === 'sent' ? (
               <div
                 style={{
-                  background: 'rgba(41, 182, 246, 0.08)',
-                  border: '1px solid rgba(41, 182, 246, 0.25)',
-                  borderRadius: '12px',
-                  padding: '40px',
-                  textAlign: 'center',
+                  padding: '48px 40px',
+                  border: '1px solid var(--rule-strong)',
+                  textAlign: 'left',
                 }}
               >
-                <div style={{ fontSize: '2rem', marginBottom: '16px' }}>✓</div>
+                <div
+                  className="eyebrow"
+                  style={{ color: 'var(--gold)', marginBottom: '14px' }}
+                >
+                  Received · Thank you
+                </div>
                 <h3
                   style={{
-                    fontFamily: 'Georgia, serif',
-                    fontSize: '1.4rem',
-                    color: '#ffffff',
-                    marginBottom: '12px',
+                    fontFamily: 'var(--display)',
+                    fontSize: '2rem',
+                    fontWeight: 300,
+                    color: 'var(--bone)',
+                    marginBottom: '14px',
+                    fontVariationSettings: '"opsz" 96',
+                    letterSpacing: '-0.02em',
                   }}
                 >
-                  Message sent.
+                  Your message has{' '}
+                  <span style={{ fontStyle: 'italic', color: 'var(--gold)' }}>arrived.</span>
                 </h3>
-                <p style={{ color: '#90caf9', fontFamily: 'system-ui, sans-serif', fontSize: '0.95rem' }}>
-                  Thanks for reaching out. I&apos;ll get back to you within 24 hours.
+                <p style={{ color: 'var(--bone-muted)', maxWidth: '46ch', lineHeight: 1.7 }}>
+                  Thanks for reaching out. I&rsquo;ll get back to you within twenty-four
+                  hours, typically sooner.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="form-row">
+              <form
+                onSubmit={handleSubmit}
+                style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}
+              >
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '32px',
+                  }}
+                  className="form-row"
+                >
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#90caf9', fontFamily: '"Courier New", monospace', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                      Name *
+                    <label htmlFor="name" style={fieldLabelStyle}>
+                      Name <span style={{ color: 'var(--gold)' }}>*</span>
                     </label>
                     <input
+                      id="name"
                       type="text"
                       name="name"
                       value={form.name}
                       onChange={handleChange}
                       required
-                      placeholder="Your name"
-                      style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.5)')}
-                      onBlur={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.15)')}
+                      placeholder="Your full name"
+                      style={fieldStyle}
+                      onFocus={(e) => (e.target.style.borderBottomColor = 'var(--gold)')}
+                      onBlur={(e) => (e.target.style.borderBottomColor = 'var(--rule-strong)')}
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#90caf9', fontFamily: '"Courier New", monospace', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                      Email *
+                    <label htmlFor="email" style={fieldLabelStyle}>
+                      Email <span style={{ color: 'var(--gold)' }}>*</span>
                     </label>
                     <input
+                      id="email"
                       type="email"
                       name="email"
                       value={form.email}
                       onChange={handleChange}
                       required
-                      placeholder="your@email.com"
-                      style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.5)')}
-                      onBlur={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.15)')}
+                      placeholder="you@company.com"
+                      style={fieldStyle}
+                      onFocus={(e) => (e.target.style.borderBottomColor = 'var(--gold)')}
+                      onBlur={(e) => (e.target.style.borderBottomColor = 'var(--rule-strong)')}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#90caf9', fontFamily: '"Courier New", monospace', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                    Company (optional)
+                  <label htmlFor="company" style={fieldLabelStyle}>
+                    Company <span style={{ color: 'var(--whisper)' }}>(optional)</span>
                   </label>
                   <input
+                    id="company"
                     type="text"
                     name="company"
                     value={form.company}
                     onChange={handleChange}
                     placeholder="Your company"
-                    style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.5)')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.15)')}
+                    style={fieldStyle}
+                    onFocus={(e) => (e.target.style.borderBottomColor = 'var(--gold)')}
+                    onBlur={(e) => (e.target.style.borderBottomColor = 'var(--rule-strong)')}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#90caf9', fontFamily: '"Courier New", monospace', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                    Message *
+                  <label htmlFor="message" style={fieldLabelStyle}>
+                    Message <span style={{ color: 'var(--gold)' }}>*</span>
                   </label>
                   <textarea
+                    id="message"
                     name="message"
                     value={form.message}
                     onChange={handleChange}
                     required
-                    placeholder="Tell me about your project or what you'd like to discuss..."
-                    rows={6}
-                    style={{ ...inputStyle, resize: 'vertical', minHeight: '140px' }}
-                    onFocus={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.5)')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(41,182,246,0.15)')}
+                    placeholder="Tell me what you&rsquo;re building, or what you&rsquo;d like to discuss…"
+                    rows={5}
+                    style={{ ...fieldStyle, resize: 'vertical', minHeight: '120px', lineHeight: 1.6 }}
+                    onFocus={(e) => (e.target.style.borderBottomColor = 'var(--gold)')}
+                    onBlur={(e) => (e.target.style.borderBottomColor = 'var(--rule-strong)')}
                   />
                 </div>
 
                 {status === 'error' && (
-                  <p style={{ color: '#ef5350', fontSize: '0.85rem', fontFamily: 'system-ui, sans-serif' }}>
+                  <p
+                    style={{
+                      fontFamily: 'var(--mono)',
+                      fontSize: '0.78rem',
+                      letterSpacing: '0.05em',
+                      color: '#cf6e6e',
+                    }}
+                  >
                     Something went wrong. Please email me directly at ashok@ashokkunchala.com
                   </p>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={status === 'sending'}
-                  style={{
-                    padding: '14px 28px',
-                    background: status === 'sending' ? 'rgba(41,182,246,0.5)' : '#29b6f6',
-                    color: '#050d1a',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    cursor: status === 'sending' ? 'not-allowed' : 'pointer',
-                    fontFamily: 'system-ui, sans-serif',
-                    transition: 'all 0.2s',
-                    alignSelf: 'flex-start',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (status !== 'sending') e.target.style.background = '#0090d4'
-                  }}
-                  onMouseLeave={(e) => {
-                    if (status !== 'sending') e.target.style.background = '#29b6f6'
-                  }}
-                >
-                  {status === 'sending' ? 'Sending...' : 'Send Message'}
-                </button>
+                <div style={{ marginTop: '12px' }}>
+                  <button
+                    type="submit"
+                    disabled={status === 'sending'}
+                    className="btn-primary"
+                    style={{
+                      opacity: status === 'sending' ? 0.5 : 1,
+                      cursor: status === 'sending' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <span>{status === 'sending' ? 'Sending…' : 'Send message'}</span>
+                    <span className="arrow">→</span>
+                  </button>
+                </div>
               </form>
             )}
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .form-row { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   )
 }

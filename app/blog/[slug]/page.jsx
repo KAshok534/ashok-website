@@ -32,12 +32,16 @@ export async function generateMetadata({ params }) {
   }
 }
 
+// Force UTC parse + format so SSR and client render the same date string.
 function formatDate(dateStr) {
   try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const [y, m, d] = String(dateStr).split('-').map(Number)
+    const date = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC',
     })
   } catch {
     return dateStr
@@ -66,40 +70,34 @@ export default function BlogPost({ params }) {
   }
 
   return (
-    <div style={{ background: '#050d1a', minHeight: '100vh', paddingTop: '100px' }}>
+    <div style={{ background: 'var(--ink)', minHeight: '100vh', paddingTop: '120px' }}>
       <style>{`
         .back-link {
-          display: inline-block;
-          color: #546e7a;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-family: var(--mono);
+          font-size: 0.74rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--bone-muted);
           text-decoration: none;
-          font-family: system-ui, sans-serif;
-          font-size: 0.85rem;
-          margin-bottom: 48px;
-          transition: color 0.2s;
+          margin-bottom: 56px;
+          transition: color 220ms ease;
         }
-        .back-link:hover { color: #29b6f6; }
-        .post-h2-link {
-          font-family: Georgia, serif;
-          font-size: 1rem;
-          color: #ffffff;
+        .back-link:hover { color: var(--gold); }
+        .related-row {
+          display: grid;
+          grid-template-columns: 60px 1fr 80px;
+          gap: 24px;
+          padding: 24px 0;
+          border-bottom: 1px solid var(--rule);
           text-decoration: none;
-          line-height: 1.4;
-          display: block;
-          margin-bottom: 6px;
-          transition: color 0.2s;
+          transition: background 220ms ease;
+          align-items: baseline;
         }
-        .post-h2-link:hover { color: #29b6f6; }
-        .related-card {
-          display: block;
-          padding: 20px;
-          background: #0a1628;
-          border: 1px solid rgba(41,182,246,0.1);
-          border-radius: 10px;
-          text-decoration: none;
-          transition: border-color 0.2s;
-          margin-bottom: 12px;
-        }
-        .related-card:hover { border-color: rgba(41,182,246,0.3); }
+        .related-row:hover { background: rgba(201,168,106,0.04); }
+        .related-row:hover .related-title { color: var(--gold); }
       `}</style>
 
       <script
@@ -107,113 +105,98 @@ export default function BlogPost({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
 
-      <article style={{ maxWidth: '760px', margin: '0 auto', padding: '60px 24px' }}>
+      <article style={{ maxWidth: '760px', margin: '0 auto', padding: '40px var(--section-x) calc(var(--section-y) - 40px)' }}>
         <Link href="/blog" className="back-link">
-          ← All posts
+          <span>←</span>
+          <span>All entries</span>
         </Link>
 
         {/* Meta */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            marginBottom: '16px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <time
-            dateTime={post.frontmatter.date}
-            style={{
-              fontFamily: '"Courier New", monospace',
-              fontSize: '0.78rem',
-              color: '#546e7a',
-              letterSpacing: '0.05em',
-            }}
-          >
+        <div className="eyebrow" style={{ marginBottom: '20px', color: 'var(--slate)' }}>
+          <time dateTime={post.frontmatter.date}>
             {formatDate(post.frontmatter.date)}
           </time>
           {post.frontmatter.readTime && (
-            <span
-              style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '0.75rem',
-                color: '#29b6f6',
-                padding: '2px 10px',
-                border: '1px solid rgba(41,182,246,0.2)',
-                borderRadius: '10px',
-              }}
-            >
-              {post.frontmatter.readTime}
-            </span>
+            <>
+              <span style={{ margin: '0 12px', color: 'var(--whisper)' }}>·</span>
+              <span style={{ color: 'var(--gold)' }}>{post.frontmatter.readTime}</span>
+            </>
           )}
         </div>
 
         {/* Title */}
         <h1
           style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(1.7rem, 5vw, 2.6rem)',
-            color: '#ffffff',
-            lineHeight: 1.2,
-            marginBottom: '32px',
-            fontWeight: 700,
+            fontFamily: 'var(--display)',
+            fontSize: 'clamp(2.2rem, 5vw, 3.4rem)',
+            fontWeight: 300,
+            color: 'var(--bone)',
+            lineHeight: 1.08,
+            letterSpacing: '-0.025em',
+            marginBottom: '36px',
+            fontVariationSettings: '"opsz" 144, "SOFT" 30',
           }}
         >
           {post.frontmatter.title}
         </h1>
+
+        {/* Excerpt as lede */}
+        {post.frontmatter.excerpt && (
+          <p className="lede" style={{ marginBottom: '40px', maxWidth: '54ch' }}>
+            {post.frontmatter.excerpt}
+          </p>
+        )}
 
         {/* Author block */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '14px',
+            gap: '16px',
             padding: '20px 0',
-            borderTop: '1px solid rgba(41,182,246,0.08)',
-            borderBottom: '1px solid rgba(41,182,246,0.08)',
-            marginBottom: '52px',
+            borderTop: '1px solid var(--rule)',
+            borderBottom: '1px solid var(--rule)',
+            marginBottom: '56px',
           }}
         >
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '44px',
+              height: '44px',
               borderRadius: '50%',
-              background: 'rgba(41,182,246,0.1)',
-              border: '2px solid rgba(41,182,246,0.25)',
-              flexShrink: 0,
+              background: 'var(--ink-warm)',
+              border: '1px solid var(--rule-strong)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1rem',
-              color: '#29b6f6',
-              fontFamily: 'Georgia, serif',
-              fontWeight: 700,
+              flexShrink: 0,
             }}
           >
-            A
+            <span
+              style={{
+                fontFamily: 'var(--display)',
+                fontStyle: 'italic',
+                fontSize: '1.05rem',
+                color: 'var(--gold)',
+                fontVariationSettings: '"opsz" 36, "SOFT" 100',
+                letterSpacing: '-0.04em',
+              }}
+            >
+              ak
+            </span>
           </div>
           <div>
             <p
               style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '0.9rem',
-                color: '#ffffff',
-                fontWeight: 600,
-                marginBottom: '2px',
+                fontFamily: 'var(--display)',
+                fontSize: '1rem',
+                color: 'var(--bone)',
+                fontVariationSettings: '"opsz" 36',
               }}
             >
               Ashok Kumar Kunchala
             </p>
-            <p
-              style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '0.72rem',
-                color: '#546e7a',
-                letterSpacing: '0.04em',
-              }}
-            >
+            <p className="marginalia" style={{ color: 'var(--slate)', marginTop: '2px' }}>
               Head of Technology · Anvesa
             </p>
           </div>
@@ -228,38 +211,34 @@ export default function BlogPost({ params }) {
         {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
           <div
             style={{
-              marginTop: '48px',
-              paddingTop: '32px',
-              borderTop: '1px solid rgba(41,182,246,0.08)',
+              marginTop: '64px',
+              paddingTop: '28px',
+              borderTop: '1px solid var(--rule)',
             }}
           >
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="marginalia" style={{ marginBottom: '14px', color: 'var(--slate)' }}>
+              Filed under
+            </div>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
               {post.frontmatter.tags.map((tag) => (
                 <span
                   key={tag}
-                  style={{
-                    padding: '4px 12px',
-                    background: 'rgba(41,182,246,0.06)',
-                    border: '1px solid rgba(41,182,246,0.15)',
-                    borderRadius: '6px',
-                    fontSize: '0.78rem',
-                    color: '#90caf9',
-                    fontFamily: '"Courier New", monospace',
-                  }}
+                  className="marginalia"
+                  style={{ color: 'var(--bone)' }}
                 >
-                  {tag}
+                  ▸ {tag}
                 </span>
               ))}
             </div>
           </div>
         )}
 
-        {/* Share — client component */}
+        {/* Share */}
         <div
           style={{
             marginTop: '40px',
-            paddingTop: '32px',
-            borderTop: '1px solid rgba(41,182,246,0.08)',
+            paddingTop: '28px',
+            borderTop: '1px solid var(--rule)',
           }}
         >
           <ShareButtons title={post.frontmatter.title} slug={params.slug} />
@@ -267,41 +246,71 @@ export default function BlogPost({ params }) {
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div
-            style={{
-              marginTop: '64px',
-              paddingTop: '40px',
-              borderTop: '1px solid rgba(41,182,246,0.08)',
-            }}
-          >
+          <div style={{ marginTop: '80px' }}>
+            <div className="eyebrow" style={{ marginBottom: '14px', color: 'var(--slate)' }}>
+              § Continue reading
+            </div>
             <h2
               style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '1.2rem',
-                color: '#ffffff',
+                fontFamily: 'var(--display)',
+                fontSize: '1.8rem',
+                fontWeight: 300,
+                color: 'var(--bone)',
                 marginBottom: '24px',
+                letterSpacing: '-0.02em',
+                fontVariationSettings: '"opsz" 96',
               }}
             >
-              More posts
+              More from the journal
             </h2>
-            {relatedPosts.map((p) => (
-              <Link key={p.slug} href={`/blog/${p.slug}`} className="related-card">
-                <span className="post-h2-link">{p.title}</span>
-                {p.excerpt && (
-                  <span
-                    style={{
-                      display: 'block',
-                      fontSize: '0.85rem',
-                      color: '#90caf9',
-                      fontFamily: 'system-ui, sans-serif',
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {p.excerpt}
+            <div style={{ borderTop: '1px solid var(--rule)' }}>
+              {relatedPosts.map((p, i) => (
+                <Link
+                  key={p.slug}
+                  href={`/blog/${p.slug}`}
+                  className="related-row"
+                >
+                  <span className="marginalia" style={{ color: 'var(--whisper)' }}>
+                    № {String(i + 1).padStart(2, '0')}
                   </span>
-                )}
-              </Link>
-            ))}
+                  <div>
+                    <span
+                      className="related-title"
+                      style={{
+                        fontFamily: 'var(--display)',
+                        fontSize: '1.15rem',
+                        color: 'var(--bone)',
+                        lineHeight: 1.3,
+                        fontVariationSettings: '"opsz" 60',
+                        display: 'block',
+                        marginBottom: '6px',
+                        transition: 'color 220ms ease',
+                      }}
+                    >
+                      {p.title}
+                    </span>
+                    {p.excerpt && (
+                      <span
+                        style={{
+                          display: 'block',
+                          fontSize: '0.92rem',
+                          color: 'var(--bone-muted)',
+                          lineHeight: 1.65,
+                        }}
+                      >
+                        {p.excerpt}
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className="marginalia"
+                    style={{ color: 'var(--gold)', textAlign: 'right' }}
+                  >
+                    Read →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </article>

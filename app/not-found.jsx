@@ -10,65 +10,55 @@ export default function NotFound() {
   return (
     <div
       style={{
-        background: '#050d1a',
+        background: 'var(--ink)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '40px 24px',
-        textAlign: 'center',
+        padding: '40px var(--section-x)',
+        position: 'relative',
+        zIndex: 2,
       }}
     >
-      <div style={{ maxWidth: '480px' }}>
-        <p
-          style={{
-            fontFamily: '"Courier New", monospace',
-            fontSize: '0.75rem',
-            letterSpacing: '0.2em',
-            color: '#29b6f6',
-            textTransform: 'uppercase',
-            marginBottom: '20px',
-          }}
-        >
-          404
-        </p>
+      <div style={{ maxWidth: '560px' }}>
+        <div className="eyebrow" style={{ marginBottom: '20px' }}>
+          § Error 404 — Stray correspondence
+        </div>
         <h1
           style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(2rem, 5vw, 3rem)',
-            color: '#ffffff',
-            marginBottom: '16px',
-            lineHeight: 1.2,
+            fontFamily: 'var(--display)',
+            fontSize: 'clamp(2.6rem, 6vw, 4rem)',
+            fontWeight: 300,
+            color: 'var(--bone)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.025em',
+            marginBottom: '20px',
+            fontVariationSettings: '"opsz" 144, "SOFT" 30',
           }}
         >
-          Page not found.
+          This page is{' '}
+          <span style={{ fontStyle: 'italic', color: 'var(--gold)', fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+            not in the index.
+          </span>
         </h1>
         <p
           style={{
-            fontSize: '1rem',
-            color: '#546e7a',
-            fontFamily: 'system-ui, sans-serif',
-            lineHeight: 1.7,
+            fontFamily: 'var(--display)',
+            fontStyle: 'italic',
+            fontSize: '1.18rem',
+            color: 'var(--bone-muted)',
+            lineHeight: 1.5,
             marginBottom: '40px',
+            maxWidth: '46ch',
+            fontVariationSettings: '"opsz" 60, "SOFT" 100',
           }}
         >
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          The page you&apos;re looking for has either been moved, retired, or
+          never existed in the first place.
         </p>
-        <Link
-          href="/"
-          style={{
-            display: 'inline-block',
-            padding: '12px 28px',
-            background: '#29b6f6',
-            color: '#050d1a',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontFamily: 'system-ui, sans-serif',
-          }}
-        >
-          Back to Home
+        <Link href="/" className="btn-primary" style={{ textDecoration: 'none' }}>
+          <span>Return home</span>
+          <span className="arrow">→</span>
         </Link>
       </div>
     </div>

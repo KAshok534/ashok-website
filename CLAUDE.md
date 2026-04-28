@@ -74,33 +74,71 @@ ashok-website/
 └── CLAUDE.md                 # This file
 ```
 
-## Design System
-```
-Background primary:  #050d1a
-Background secondary: #070e1c
-Card background:     #0a1628
-Accent:              #29b6f6
-Accent dark:         #0090d4
-Text primary:        #ffffff
-Text secondary:      #90caf9
-Text muted:          #546e7a
-Border:              rgba(41, 182, 246, 0.15)
+## Design System — "Editorial Executive"
+Redesigned 2026 to escape the generic "AI-startup dark + cyan" look.
+Direction: warm-ink editorial — think *Aeon* magazine or a senior partner's
+profile at a top consulting firm, in dark mode. Numbered sections, hairline
+rules, asymmetric grids, marginalia.
 
-Headings: Georgia, serif
-Body: system-ui, sans-serif
-Mono/labels: "Courier New", monospace
-
-Section padding: 110px vertical (desktop), 60px (mobile)
-Max content width: 1200px centered
+### Palette (CSS variables, see `app/globals.css`)
 ```
+--ink:        #0e0d0b   /* page bg — warm, not blue-black */
+--ink-deep:   #08080a   /* footer */
+--ink-warm:   #14110d   /* alt section bg */
+--rule:       rgba(235,229,216,0.10)  /* hairlines */
+--rule-strong:rgba(235,229,216,0.22)
+
+--bone:       #ebe5d8   /* primary text — warm off-white */
+--bone-muted: #b8b1a3   /* secondary text */
+--slate:      #75716a   /* tertiary / captions */
+--whisper:    #4a4742   /* very low contrast */
+
+--gold:       #c9a86a   /* SOLE accent — replaces cyan */
+--oxblood:    #8b3a3a   /* used very sparingly */
+```
+**Never use cyan. Never use #29b6f6. Gold is the only accent.**
+
+### Typography (loaded via `next/font/google` in `app/layout.jsx`)
+```
+--display: Fraunces (variable serif, opsz + SOFT axes)
+--body:    Inter Tight (refined sans)
+--mono:    JetBrains Mono
+```
+Headings use Fraunces with `font-variation-settings: "opsz" 144, "SOFT" 30`.
+Pull-quotes use the italic with `"SOFT" 100`.
+
+### Editorial primitives (defined in `globals.css`)
+- `.eyebrow` — § marker, mono caps in gold
+- `.lede` — large italic Fraunces opening paragraph
+- `.marginalia` — small mono caption text
+- `.editorial-link` — hairline-underlined link, reveals on hover
+- `.btn-primary` — bordered (not filled), letterspacing animates on hover
+- `.btn-ghost` — text-only secondary action
+- `.rule` — 1px hairline divider
+
+### Layout rhythm
+```
+--section-y: clamp(96px, 12vw, 160px)
+--section-x: clamp(20px, 5vw, 64px)
+--measure:   65ch  (ideal text column)
+```
+Max content width: 1240px. Sections numbered §01, §02, §03 …
+
+### Atmosphere
+- Body has a 4.5%-opacity SVG noise overlay (paper grain) via `body::before`
+- No gradients, no glows, no rounded cards
+- Hairline borders (top/bottom only) replace boxed cards
+- Motion is restrained: one staggered reveal per section, no scroll fades on every block
 
 ## Key Decisions & Preferences
 - **No pricing on Services** — removed intentionally. CTAs go to contact form to discuss scope first
 - **Nav anchor links** — work from any page (uses Next.js router to navigate to `/#section` when not on homepage)
-- **Profile photo** — `objectPosition: 'center 23%'` (tuned by Ashok to show face + some body)
+- **Profile photo** — `objectPosition: 'center 23%'`, slight grayscale + reduced saturation for editorial feel (tuned by Ashok)
 - **Contact form** — Formspree ID `xlgonjal`, wired in `components/Contact.jsx`
 - **No TypeScript** — plain JavaScript throughout
 - **No external CMS** — blog posts are local MDX files in `/posts/`
+- **No component libraries** — explicitly NOT using shadcn/ui, 21st.dev, etc. Hand-built so it doesn't look generic
+- **Favicon** — SVG monogram at `app/icon.svg` and `app/apple-icon.svg` (italic "ak" in Fraunces, gold on ink)
 
 ## Blog Post Format
 Every post in `/posts/` needs this frontmatter:
