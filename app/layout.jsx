@@ -62,28 +62,24 @@ export const metadata = {
     title: 'Ashok Kumar Kunchala — Technology Leader & Enterprise AI Architect',
     description:
       'Building production-ready AI systems for enterprise. 13+ years · 15+ global clients · Azure · LLM · Agentic AI',
-    images: [
-      {
-        url: '/assets/ashok.png',
-        width: 1200,
-        height: 630,
-        alt: 'Ashok Kumar Kunchala — Technology Leader & Enterprise AI Architect',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Ashok Kumar Kunchala — Technology Leader & Enterprise AI Architect',
     description:
       'Building production-ready AI systems for enterprise. 13+ years · 15+ global clients.',
-    images: ['/assets/ashok.png'],
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
   },
-  alternates: { canonical: 'https://ashokkunchala.com' },
+  alternates: {
+    canonical: 'https://ashokkunchala.com',
+    types: {
+      'application/rss+xml': 'https://ashokkunchala.com/feed.xml',
+    },
+  },
 }
 
 export const viewport = {

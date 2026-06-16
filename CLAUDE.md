@@ -42,16 +42,20 @@ Azure AKS, .NET Core, Angular, RAG Architecture, Agentic AI, LLM, Azure OpenAI, 
 ```
 ashok-website/
 ├── app/
-│   ├── page.jsx              # Home page — all sections + JSON-LD schema
+│   ├── page.jsx              # Home page — all sections + JSON-LD graph + FAQ
 │   ├── blog/
-│   │   ├── page.jsx          # Blog listing
-│   │   └── [slug]/page.jsx   # Individual blog post
+│   │   ├── page.jsx          # Blog listing (+ Blog JSON-LD)
+│   │   ├── [slug]/page.jsx   # Individual blog post (+ Article/Breadcrumb JSON-LD)
+│   │   └── [slug]/opengraph-image.jsx  # Per-post dynamic OG card
 │   ├── layout.jsx            # Root layout, SEO metadata, nav + footer
+│   ├── opengraph-image.jsx   # Homepage dynamic 1200×630 OG/Twitter card
+│   ├── robots.js             # Dynamic robots.txt (welcomes AI crawlers)
 │   ├── sitemap.js            # Dynamic sitemap
+│   ├── feed.xml/route.js     # RSS 2.0 feed for the Journal
 │   └── globals.css           # CSS variables, prose styles
 ├── components/
 │   ├── Navbar.jsx            # Fixed nav — handles cross-page anchor scrolling
-│   ├── Hero.jsx              # Canvas particle animation + stats row
+│   ├── Hero.jsx              # Typographic hero (warm aurora bg, no canvas) + stats
 │   ├── About.jsx             # Photo (objectPosition: center 23%) + bio
 │   ├── Expertise.jsx         # 3-column skill grid
 │   ├── Timeline.jsx          # Career timeline (desktop alternating / mobile left)
@@ -64,11 +68,12 @@ ashok-website/
 ├── posts/                    # MDX blog posts
 │   └── rag-in-production.mdx
 ├── lib/
-│   └── posts.js              # getPosts() and getPost(slug) helpers
+│   ├── posts.js              # getPosts() and getPost(slug) helpers
+│   ├── site.js               # Single source of truth: person/site facts
+│   ├── seo.js                # JSON-LD builders (Person/WebSite/FAQ/Article…)
+│   └── date.js               # Shared UTC-safe formatDate()
 ├── public/
-│   ├── assets/ashok.png      # Profile photo (objectPosition: center 23%)
-│   ├── robots.txt
-│   └── sitemap.xml           # Static sitemap (also dynamic via sitemap.js)
+│   └── assets/ashok.png      # Profile photo (objectPosition: center 23%)
 ├── jsconfig.json             # Path alias @/* → ./*
 ├── vercel.json               # cleanUrls: true, trailingSlash: false
 └── CLAUDE.md                 # This file
@@ -139,6 +144,29 @@ Max content width: 1240px. Sections numbered §01, §02, §03 …
 - **No external CMS** — blog posts are local MDX files in `/posts/`
 - **No component libraries** — explicitly NOT using shadcn/ui, 21st.dev, etc. Hand-built so it doesn't look generic
 - **Favicon** — SVG monogram at `app/icon.svg` and `app/apple-icon.svg` (italic "ak" in Fraunces, gold on ink)
+
+## SEO & Machine Discoverability
+Goal: rank top-5 on Google for the (generic) name "Ashok Kumar Kunchala" and
+make his facts trivially extractable by AI assistants and scrapers.
+
+- **Single source of truth:** `lib/site.js` holds the canonical person/site
+  facts. `lib/seo.js` builds all JSON-LD from it — keep them in sync, never
+  hardcode facts in pages.
+- **Structured data:** homepage emits a connected `@graph`
+  (`WebSite` + `Organization` + `Person` + `ProfilePage`, cross-referenced by
+  `@id`) plus a `FAQPage` ("Who is Ashok Kumar Kunchala?" etc.). Blog index
+  emits `Blog`; posts emit `BlogPosting` + `BreadcrumbList`.
+- **Canonicals:** every route sets `alternates.canonical` (relative paths
+  resolve against `metadataBase`). Don't duplicate URLs.
+- **OG images:** generated via `next/og` `ImageResponse` (file-convention
+  `opengraph-image.jsx`), NOT the portrait photo. 1200×630, on-brand
+  ink+gold. Don't add explicit `openGraph.images` in metadata — the file
+  convention wires og:image + twitter:image automatically.
+- **robots.txt** (`app/robots.js`) explicitly allows the major AI crawlers
+  (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, …).
+- **RSS** at `/feed.xml`, linked via `alternates.types` in the root layout.
+- **Sitemap** is dynamic only (`app/sitemap.js`); there is NO static
+  `public/sitemap.xml` or `public/robots.txt` anymore — don't re-add them.
 
 ## Blog Post Format
 Every post in `/posts/` needs this frontmatter:

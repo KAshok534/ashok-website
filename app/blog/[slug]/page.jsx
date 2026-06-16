@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getPost, getPosts } from '@/lib/posts'
+import { formatDate } from '@/lib/date'
+import { articleJsonLd, breadcrumbJsonLd } from '@/lib/seo'
+import { SITE_URL } from '@/lib/site'
 import ShareButtons from '@/components/ShareButtons'
 
 export async function generateStaticParams() {
@@ -13,38 +16,27 @@ export async function generateMetadata({ params }) {
   const post = getPost(params.slug)
   if (!post) return {}
 
+  const url = `${SITE_URL}/blog/${params.slug}`
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.excerpt,
+    keywords: post.frontmatter.tags,
+    alternates: { canonical: `/blog/${params.slug}` },
     openGraph: {
       title: `${post.frontmatter.title} | Ashok Kumar Kunchala`,
       description: post.frontmatter.excerpt,
-      url: `https://ashokkunchala.com/blog/${params.slug}`,
+      url,
       type: 'article',
       publishedTime: post.frontmatter.date,
+      modifiedTime: post.frontmatter.date,
       authors: ['Ashok Kumar Kunchala'],
+      tags: post.frontmatter.tags,
     },
     twitter: {
       card: 'summary_large_image',
       title: post.frontmatter.title,
       description: post.frontmatter.excerpt,
     },
-  }
-}
-
-// Force UTC parse + format so SSR and client render the same date string.
-function formatDate(dateStr) {
-  try {
-    const [y, m, d] = String(dateStr).split('-').map(Number)
-    const date = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      timeZone: 'UTC',
-    })
-  } catch {
-    return dateStr
   }
 }
 
@@ -55,19 +47,12 @@ export default function BlogPost({ params }) {
   const allPosts = getPosts()
   const relatedPosts = allPosts.filter((p) => p.slug !== params.slug).slice(0, 2)
 
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.frontmatter.title,
-    description: post.frontmatter.excerpt,
-    author: {
-      '@type': 'Person',
-      name: 'Ashok Kumar Kunchala',
-      url: 'https://ashokkunchala.com',
-    },
-    datePublished: post.frontmatter.date,
-    url: `https://ashokkunchala.com/blog/${params.slug}`,
-  }
+  const articleSchema = articleJsonLd(post, params.slug)
+  const breadcrumbSchema = breadcrumbJsonLd([
+    { name: 'Home', url: SITE_URL },
+    { name: 'Journal', url: `${SITE_URL}/blog` },
+    { name: post.frontmatter.title, url: `${SITE_URL}/blog/${params.slug}` },
+  ])
 
   return (
     <div style={{ background: 'var(--ink)', minHeight: '100vh', paddingTop: '120px' }}>
@@ -102,7 +87,11 @@ export default function BlogPost({ params }) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       <article style={{ maxWidth: '760px', margin: '0 auto', padding: '40px var(--section-x) calc(var(--section-y) - 40px)' }}>

@@ -1,31 +1,18 @@
 import Link from 'next/link'
 import { getPosts } from '@/lib/posts'
+import { formatDate } from '@/lib/date'
+import { blogJsonLd } from '@/lib/seo'
 
 export const metadata = {
   title: 'Journal — Notes on AI & Engineering',
   description:
     'Ashok Kumar Kunchala writes about building enterprise AI systems, RAG architecture, Azure, and engineering leadership. Real lessons from production — not theory.',
+  alternates: { canonical: '/blog' },
   openGraph: {
     title: 'Journal — Ashok Kumar Kunchala',
     description: 'Real lessons from building enterprise AI systems. RAG, Agentic AI, Azure, and engineering leadership.',
     url: 'https://ashokkunchala.com/blog',
   },
-}
-
-// Force UTC parse + format so SSR and client render the same date string.
-function formatDate(dateStr) {
-  try {
-    const [y, m, d] = String(dateStr).split('-').map(Number)
-    const date = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      timeZone: 'UTC',
-    })
-  } catch {
-    return dateStr
-  }
 }
 
 export default function BlogPage() {
@@ -44,6 +31,10 @@ export default function BlogPage() {
         paddingTop: '120px',
       }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd(posts)) }}
+      />
       <style>{`
         .toc-row { transition: background 220ms ease; }
         .toc-row:hover { background: rgba(201,168,106,0.04); }
